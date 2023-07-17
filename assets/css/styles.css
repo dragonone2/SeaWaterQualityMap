@@ -1,0 +1,15 @@
+#chart-container {
+    width: 50%;
+    float: left;
+}
+#data {
+    width: 50%;
+    float: right;
+    padding: 20px;
+    box-sizing: border-box;
+}
+#canvas {
+    width: 100% !important;
+    max-width: 600px;
+    height: auto !important;
+}
