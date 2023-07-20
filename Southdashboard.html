@@ -46,7 +46,7 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <span class="simple-text">
-                        Sea Water quality
+                        Ocean Quality
                     </span>
 
                 </div>
@@ -57,155 +57,21 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
+
                     <li>
-                        <a class="nav-link" href="./user.html">
-                            <i class="nc-icon nc-circle-09"></i>
-                            <p>User Profile</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="./maps.html">
+                        <a class="nav-link" href="./gridmap.html">
                             <i class="nc-icon nc-pin-3"></i>
                             <p>Maps</p>
                         </a>
                     </li>
+                    <li>
+                        <a class="nav-link" href="./user.html">
+                            <i class="nc-icon nc-circle-09"></i>
+                            <p>Team Profile</p>
+                        </a>
+                    </li>
                 </ul>
-            </div>
-        </div>
-        <div class="main-panel">
-            <!-- 상단바 설정 -->
-            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
-                <div class="container-fluid">
-                    <a class="navbar-brand"> 남해 </a>
-                    <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-bar burger-lines"></span>
-                        <span class="navbar-toggler-bar burger-lines"></span>
-                        <span class="navbar-toggler-bar burger-lines"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-end" id="navigation">
-                        <ul class="nav navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link" data-toggle="dropdown">
-                                    <span class="d-lg-none">Dashboard</span>
-                                </a>
-                            </li>
-                            <li class="dropdown nav-item">
-                                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                    <i class="fa fa-map"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="./dashboard.html">동해</a></li>
-                                    <li><a class="dropdown-item" href="./Southdashboard.html">남해</a></li>
-                                    <li><a class="dropdown-item" href="./Westdashboard.html">서해</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://kosis.kr/statHtml/statHtml.do?orgId=146&tblId=DT_MLTM_1742&conn_path=I2"
-                                    class="nav-link" target="_blank">
-                                    <span class="d-lg-block">자료 출처</span>
-                                </a>
-                            </li>
-
-                        </ul>
-
-                    </div>
-                </div>
-            </nav>
-            <!-- 대시보드 내용 설정 -->
-            <div class="content">
-                <div class="container-fluid">
-                    
-                    <div class="row">
-
-                        <!-- 남해 조사 위치 -->
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">수질 조사 위치</h4>
-                                </div>
-                                <div class="card-body">
-                                    <img src="./assets/img/남해.png" alt="남해 사진" style="max-width: 100%; max-height: 100%; margin-bottom: 0;">
-                                    <div id="chartHours" class="ct-chart" style="width: 150px; height: 0px;"></div>
-                                </div>
-                            </div>
-                        </div> 
-                        
-                        <!-- 수질 등급 -->
-                        <div class="col-md-7">
-                            <div class="card ">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Water Quality by Year</h4>
-                                    <div id="chart-container">
-                                        <canvas id="chart-equation"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- 수질 구성요소 -->
-                        <div class="col-md-3" >
-                            <div class="card ">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Water Quality Components</h4>
-                                </div>
-                                <div id="chart-container" >
-                                    <canvas id="chart"></canvas>
-                                </div>
-                                <div id="data" style="display: none;"></div>
-                            </div>
-                        </div>    
-
-                        <!-- 연도별 요소 변화량 -->
-                        <div class="col-md-8">
-                            <div class="card ">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Water Quality by Year</h4>
-                                </div>
-                                <div class="card-body ">
-                                    <div id="chart-container">
-                                        <canvas id="chart-ph"></canvas>
-                                        <canvas id="chart-do"></canvas>
-                                        <canvas id="chart-tn"></canvas>
-                                        <canvas id="chart-tp"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-        <!-- 하단바 설정 -->
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav>
-                    <ul class="footer-menu">
-                        <li>
-                            <a href="#">
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Company
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Portfolio
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                Blog
-                            </a>
-                        </li>
-                    </ul>
+                <div class="sidebar-bottom">
                     <p class="copyright text-center">
                         ©
                         <script>
@@ -213,9 +79,97 @@
                         </script>
                         <a href="https://sw.sunmoon.ac.kr/">선문대학교 몰입형 팀</a>, made with love for a better app
                     </p>
-                </nav>
+                </div>
             </div>
-        </footer>
+        </div>
+        <div class="main-panel">
+            <!-- 상단바 설정 -->
+            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
+                <div class="container-fluid-hight">
+                    <a class="navbar-brand">남해</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                </div>
+            </nav>
+            <!-- 대시보드 내용 설정 -->
+            <div class="content">
+                <div class="container-fluid">
+
+                    <div class="row">
+
+                        <!-- 남해 조사 위치 -->
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title d-inline-block">수질 조사 위치</h4>
+                                    <div class="dropdown nav-item d-inline-block ml-2">
+                                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                            <i class="fa fa-map"></i>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="./dashboard.html">동해</a></li>
+                                            <li><a class="dropdown-item" href="./Southdashboard.html">남해</a></li>
+                                            <li><a class="dropdown-item" href="./Westdashboard.html">서해</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <img src="./assets/img/south.png" alt="남해 사진"
+                                    style="max-width: 90%; max-height: 90%; margin-bottom: 0;">
+                                    <div id="chartHours" class="ct-chart" style="width: 150px; height: 0px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 수질 등급 -->
+                        <div class="col-md-7">
+                            <div class="card ">
+                                <div class="card-header ">
+                                    <h4 class="card-title">수질 등급 변화 그래프</h4>
+                                    <div id="chart-container">
+                                        <canvas id="chart-equation"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 수질 구성요소 -->
+                        <div class="col-md-3">
+                            <div class="card ">
+                                <div class="card-header ">
+                                    <h4 class="card-title">수질 구성 요소</h4>
+                                </div>
+                                <div id="chart-container">
+                                    <canvas id="chart"></canvas>
+                                </div>
+                                <div id="data" style="display: none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 연도별 요소 변화량 -->
+                        <div class="col-md-8">
+                            <div class="card ">
+                                <div class="card-header ">
+                                    <h4 class="card-title">구성 요소 별 변화 그래프</h4>
+                                </div>
+                                    <div id="chart-container">
+                                        <canvas id="chart-ph"></canvas>
+                                        <canvas id="chart-do"></canvas>
+                                        <canvas id="chart-tn"></canvas>
+                                        <canvas id="chart-tp"></canvas>
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+      
+       
     </div>
     </div>
 
