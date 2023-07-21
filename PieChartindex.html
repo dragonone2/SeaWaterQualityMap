@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #chart-container {
+            width: 50%;
+            float: left;
+        }
+        #data {
+            width: 50%;
+            float: right;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        canvas {
+            width: 100% !important;
+            max-width: 600px;
+            height: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="chart-container">
+        <canvas id="chart"></canvas>
+    </div>
+    <div id="data"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script>
+        window.onload = function() {
+            Papa.parse('2022_Ocean.csv', {
+                download: true,
+                complete: function(results) {
+                    var data = results.data;
+                    var headers = data[1].slice(3); // Headers row, skip first 3 columns
+                    var values = []; // Values for "속초연안"
+
+                    for (var i = 2; i < data.length; i++) {
+                        if (data[i][1] === "속초연안") {
+                            values = data[i].slice(3); // Starting from 4th column
+                            break;
+                        }
+                    }
+
+                    var output = '';
+                    var chartData = [];
+                    for (var j = 0; j < headers.length; j++) {
+                        output += headers[j] + ' : ' + values[j] + '<br/>';
+                        chartData.push({
+                            label: headers[j],
+                            value: parseFloat(values[j])
+                        });
+                    }
+
+                    document.getElementById('data').innerHTML = output;
+
+                    // Draw the chart
+                    var ctx = document.getElementById('chart').getContext('2d');
+                    chartData.sort((a, b) => b.value - a.value);
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: chartData.map(x => x.label),
+                            datasets: [{
+                                data: chartData.map(x => x.value),
+                                backgroundColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)',
+                                'rgba(205, 99, 132, 1)',
+                                'rgba(54, 122, 235, 1)',
+                                'rgba(255, 176, 86, 1)',
+                                'rgba(75, 162, 192, 1)',
+                                'rgba(123, 102, 255, 1)',
+                                'rgba(255, 119, 64, 1)',
+                                ]
+                            }]
+                        }
+                    });
+                }
+            });
+        };
+    </script>
+</body>
+</html>

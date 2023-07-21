@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.ico">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Light Bootstrap Dashboard - Free Bootstrap 4 Admin Dashboard by Creative Tim</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+        name='viewport' />
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+    <!-- CSS Files -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/css/light-bootstrap-dashboard.css?v=2.0.0 " rel="stylesheet" />
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link href="assets/css/demo.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script src="./assets/js/Chart.js"></script>
+    
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
+            <!--
+         Tip 1: You can change the color of the sidebar using: data-color="purple | blue | green | orange | red"
+ 
+         Tip 2: you can also add an image using data-image tag
+     -->
+     <div class="sidebar-wrapper">
+        <div class="logo">
+            <span class="simple-text">
+                Sea Water quality
+            </span>
+            
+        </div>
+        <ul class="nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="nc-icon nc-chart-pie-35"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="./user.html">
+                    <i class="nc-icon nc-circle-09"></i>
+                    <p>User Profile</p>
+                </a>
+            </li>
+
+
+
+            <li>
+                <a class="nav-link" href="./maps.html">
+                    <i class="nc-icon nc-pin-3"></i>
+                    <p>Maps</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+        </div>
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg " color-on-scroll="500">
+                <div class="container-fluid">
+                    <a class="navbar-brand"> Dashboard </a>
+                    <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                        <span class="navbar-toggler-bar burger-lines"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                        <ul class="nav navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" data-toggle="dropdown">
+                                    <span class="d-lg-none">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="dropdown nav-item">
+                                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                    <i class="fa fa-map"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="./dashboard.html">동해</a></li>
+                                    <li><a class="dropdown-item" href="./south.html">남해</a></li>
+                                    <li><a class="dropdown-item" href="./west.html">서해</a></li>
+                                </ul>                                
+                            </li>
+                            
+                            
+                            <li class="nav-item">
+                                <a href="https://kosis.kr/statHtml/statHtml.do?orgId=146&tblId=DT_MLTM_1742&conn_path=I2" class="nav-link" target="_blank">
+                                    <i class="nc-icon nc-zoom-split"></i>
+                                    <span class="d-lg-block">&nbsp;출처</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                        
+                    </div>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card ">
+                                <!-- Card Header -->
+                                <div class="card-header ">
+                                    <h4 class="card-title">Water Quality Components</h4>
+                                    
+                                </div>
+
+                                <div id="chart-container">
+                                    <canvas id="chart"></canvas>
+                                </div>
+                                <div id="data" style="display: none;"></div>
+                                
+        
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card ">
+                                <div class="card-header ">
+                                    <h4 class="card-title">Water Quality by Year</h4>
+                                    
+                                </div>
+                                <div class="card-body ">
+                                    <div id="chart-container">
+                                    <canvas id="chart-ph"></canvas>
+                                    <canvas id="chart-do"></canvas>
+                                    <canvas id="chart-tn"></canvas>
+                                    <canvas id="chart-tp"></canvas>
+                                </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <nav>
+                    <ul class="footer-menu">
+                        <li>
+                            <a href="#">
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                Company
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                Portfolio
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                Blog
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-center">
+                        ©
+                        <script>
+                            document.write(new Date().getFullYear())
+                        </script>
+                        <a href="https://sw.sunmoon.ac.kr/">선문대학교 몰입형 팀</a>, made with love for a better app
+                    </p>
+                </nav>
+            </div>
+        </footer>
+    </div>
+    </div>
+
+</body>
+
+
+
+</html>
