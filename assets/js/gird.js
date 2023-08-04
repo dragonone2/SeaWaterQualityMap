@@ -1,8 +1,26 @@
+
+function getBounds(coordinate, zoomLevel) {
+  const delta = 5 / Math.pow(2, zoomLevel);
+  
+  return {
+    north: coordinate.lat + delta,
+    south: coordinate.lat - delta,
+    east: coordinate.lng + delta,
+    west: coordinate.lng - delta,
+  };
+}
+
+let rectangles = [];
+
 function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
-    center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
-    mapTypeId: "terrain",
+    center: { lat: 35.9078, lng: 127.7669 }, // 한국을 중심으로
+    mapTypeId: "roadmap", // '지형' 대신 '로드맵'으로 기본 설정
+    mapTypeControlOptions: {
+      mapTypeIds: ['roadmap', 'satellite', 'hybrid'] // '지형' 제외
+    },
+    streetViewControl: false, // 스트리트 뷰 비활성화
     styles: [
       {
         "elementType": "geometry",
@@ -184,27 +202,28 @@ function initMap() {
       .catch((error) => console.log("Error reading CSV file:", error));
   }
 
-  const csvFilePath = "./shipdata.csv";
+  const csvFilePath = "./kr_sea_data.csv";
 
   function getColorByValue(value) {
     switch (value) {
       case 1:
-        return "#9fc5e8"; // 연한 파란색
+        return "#9fc5e8";
       case 2:
-        return "#a4d39c"; // 연한 초록색
+        return "#a4d39c";
       case 3:
-        return "#ffec94"; // 연한 노란색
+        return "#ffec94";
       case 4:
-        return "#ffd29a"; // 연한 주황색
+        return "#ffd29a";
       case 5:
-        return "#ff9c9c"; // 연한 빨간색
+        return "#ff9c9c";
       default:
-        return "#eaeaea"; // 기본값: 연한 회색
+        return "#eaeaea";
     }
   }
 
   readCSVFile(csvFilePath, (coordinates) => {
     coordinates.forEach((coordinate) => {
+      console.log(coordinate); // デバッグステートメントを追加
       const rectangle = new google.maps.Rectangle({
         strokeColor: getColorByValue(coordinate.value),
         strokeOpacity: 0,
@@ -212,13 +231,17 @@ function initMap() {
         fillColor: getColorByValue(coordinate.value),
         fillOpacity: 0.9,
         map,
-        zIndex: coordinate.value, // zIndex 속성 추가
-        bounds: {
-          north: coordinate.lat + 0.25,
-          south: coordinate.lat - 0.25,
-          east: coordinate.lng + 0.25,
-          west: coordinate.lng - 0.25,
-        },
+        zIndex: coordinate.value,
+        bounds: getBounds(coordinate, map.getZoom()),
+      });
+
+      rectangles.push({rectangle: rectangle, coordinate: coordinate});
+    });
+
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+      const zoomLevel = map.getZoom();
+      rectangles.forEach(rect => {
+        rect.rectangle.setBounds(getBounds(rect.coordinate, zoomLevel));
       });
     });
   });

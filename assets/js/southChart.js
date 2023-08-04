@@ -57,44 +57,56 @@ window.onload = function () {
 
     // Line Chart
     var files = ['2018_Ocean.csv', '2019_Ocean.csv', '2020_Ocean.csv', '2021_Ocean.csv', '2022_Ocean.csv'];
-            var dataByParameter = {};
-            var labels = ["수소이온농도pH", "용존산소량DO (㎎/ℓ)", "총질소TN (㎍/ℓ)", "총인TP (㎍/ℓ)"];
-            var canvasIds = ["chart-ph", "chart-do", "chart-tn", "chart-tp"];
+var dataByParameter = {};
+var labels = ["수소이온농도pH", "용존산소량DO (㎎/ℓ)", "총질소TN (㎍/ℓ)", "총인TP (㎍/ℓ)"];
+var canvasIds = ["chart-ph", "chart-do", "chart-tn", "chart-tp"];
 
-            labels.forEach(label => dataByParameter[label] = []);
+labels.forEach(label => dataByParameter[label] = []);
 
-            files.forEach((file, index) => {
-                Papa.parse(file, {
-                    download: true,
-                    complete: function(results) {
-                        var data = results.data;
+// Convert Papa.parse into a promise
+function parseCSV(file) {
+    return new Promise((resolve) => {
+        Papa.parse(file, {
+            download: true,
+            complete: function (results) {
+                resolve(results);
+            }
+        });
+    });
+}
 
-                        labels.forEach(label => {
-                            var values = []; // Values for "속초연안"
+// Use Promise.all to wait until all CSV files have been parsed
+Promise.all(files.map(file => parseCSV(file))).then(results => {
+    results.forEach((result, index) => {
+        var data = result.data;
+        var file = files[index];
 
-                            for (var i = 2; i < data.length; i++) {
-                                if (data[i][1] === "통영연안") {
-                                    var columnIndex = data[1].indexOf(label);
-                                    if (columnIndex !== -1) {
-                                        values.push(parseFloat(data[i][columnIndex]));
-                                    }
-                                }
-                            }
+        labels.forEach(label => {
+            var values = []; // Values for "속초연안"
 
-                            dataByParameter[label].push({
-                                x: file.replace('.csv', ''),
-                                y: values[0] // Assuming each file contains one row of data for "속초연안"
-                            });
-                        });
-
-                        if (Object.values(dataByParameter)[0].length === files.length) {
-                            labels.forEach((label, index) => {
-                                drawChart(canvasIds[index], label, dataByParameter[label]);
-                            });
-                        }
+            for (var i = 2; i < data.length; i++) {
+                if (data[i][1] === "통영연안") {
+                    var columnIndex = data[1].indexOf(label);
+                    if (columnIndex !== -1) {
+                        values.push(parseFloat(data[i][columnIndex]));
                     }
-                });
+                }
+            }
+
+            dataByParameter[label].push({
+                x: file.replace('_Ocean.csv', ''), 
+                y: values[0] // Assuming each file contains one row of data for "속초연안"
             });
+        });
+
+        if (Object.values(dataByParameter)[0].length === files.length) {
+            labels.forEach((label, index) => {
+                drawChart(canvasIds[index], label, dataByParameter[label]);
+            });
+        }
+    });
+});
+
             var files = ['2018_Ocean.csv', '2019_Ocean.csv', '2020_Ocean.csv', '2021_Ocean.csv', '2022_Ocean.csv'];
             var dataByYear = {};
 
