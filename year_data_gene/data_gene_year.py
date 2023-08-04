@@ -1,11 +1,15 @@
+# data_gene_year.py
 # 우에노고홍_0804_지행중
-# 기능 :max,min를 정해서 random으로 소수점 두 번째까지의 숫자 생성하여,cvs로 저장/機能：maxとminを設定して、ランダムに小数点以下二桁の数を生成し、cvsに保存
-# 추가 예정: csv-->>DB
-# 저장 CSV :random_ocean_data.csv
+# 기능 :max,min를 정해서 random으로 소수점 두 번째까지의 숫자 생성하여,DB로 저장/機能：maxとminを設定して、ランダムに小数点以下二桁の数を生成し、DBに保存
+# 추가 예정 : 없음
+# 저장 CSV :table_name>>year_data_random
+#           데이터베이스>>super_data
 
 # random year_dara generate python code
 import pandas as pd
 import numpy as np
+from sqlalchemy import create_engine
+
 
 # 각 컬럼에 대한 값 범위 정의 / 各列の値の範囲を定義
 min_values = {
@@ -70,11 +74,24 @@ for column in random_columns:
 # 고정값과 랜덤 데이터를 단일 DataFrame으로 결합 / 固定値とランダムデータを単一のDataFrameに結合
 df_random = pd.DataFrame({**fixed_values, **random_data})
 
+# MySQLデータベースに接続する
+username = 'root'
+password = ''
+hostname = 'localhost'
+database_name = 'super_data'
+table_name = 'year_dara_random'
+engine = create_engine(f'mysql+pymysql://{username}:{password}@{hostname}/{database_name}')
+
+
+df_random.to_sql(table_name, con=engine, index=True, index_label='id', if_exists='append')
+
+
 # DataFrame을 CSV 파일에 쓰기 / DataFrameをCSVファイルに書き込む
-df_random.to_csv("year_data_gene/random_ocean_data.csv", index=False)
+# df_random.to_csv("year_data_gene/random_ocean_data.csv", index=False)
 
 # DataFrame의 처음 몇 행을 보여주기 / DataFrameの最初の数行を表示
-print(df_random.head())
+# print(df_random.head())
+
 
 
 
