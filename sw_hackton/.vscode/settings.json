@@ -1,0 +1,8 @@
+{
+    "liveServer.settings.port": 5501,
+    "python.testing.pytestArgs": [
+        "real_time_gene"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
