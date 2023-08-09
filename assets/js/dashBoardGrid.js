@@ -179,7 +179,7 @@ function initMap() {
     ]
 
   });
-
+  
   function readCSVFile(fileURL, callback) {
     fetch(fileURL)
       .then((response) => response.text())
@@ -216,7 +216,6 @@ function initMap() {
         return "#eaeaea";
     }
   }
-
   readCSVFile(csvFilePath, (coordinates) => {
     coordinates.forEach((coordinate) => {
       const rectangle = new google.maps.Rectangle({
@@ -231,6 +230,11 @@ function initMap() {
       });
 
       rectangles.push({rectangle: rectangle, coordinate: coordinate});
+
+      rectangle.addListener("click", () => {
+        updateDataDisplay(coordinate.lat, coordinate.lng, coordinate.value);
+        document.getElementById("data-display").style.display = "block";
+      });
     });
 
     google.maps.event.addListener(map, 'zoom_changed', function() {
@@ -240,4 +244,10 @@ function initMap() {
       });
     });
   });
+}
+
+function updateDataDisplay(latitude, longitude, value) {
+  document.getElementById("data-lat").innerText = `Latitude: ${latitude}`;
+  document.getElementById("data-lng").innerText = `Longitude: ${longitude}`;
+  document.getElementById("data-value").innerText = `Value: ${value}`;
 }

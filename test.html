@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Heat Map with Clickable Grid</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap" async defer></script>
+  
+  <script src="test.js"></script>
+  <style>
+    #map {
+      height: 100%;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <!-- Add this to your HTML file to display data -->
+  <div id="data-display" style="display: none;">
+    <h4>Selected Position Data</h4>
+    <p id="data-lat">Latitude: </p>
+    <p id="data-lng">Longitude: </p>
+    <p id="data-value">Value: </p>
+  </div>
+</body>
+</html>
