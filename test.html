@@ -1,89 +1,152 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="assets/img/apple-icon.png"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>동해 | The Blue Ocean</title>
+    <link rel="icon" type="image/png" href="assets/img/sun.png" />
+    <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="styles.css">
+    <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+/>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>데이터 표시</title>
-    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-database.js"></script>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script src="./assets/js/Chart.js"></script>
+    <script
+      src="assets/js/core/jquery.3.2.1.min.js"
+      type="text/javascript"
+    ></script>
+    <script src="assets/js/core/popper.min.js" type="text/javascript"></script>
+    <script
+      src="assets/js/core/bootstrap.min.js"
+      type="text/javascript"
+    ></script>
+    <script src="assets/js/plugins/bootstrap-switch.js"></script>
+    
+    
+    <script src="assets/js/plugins/bootstrap-notify.js"></script>
+    <script
+      src="assets/js/light-bootstrap-dashboard.js?v=2.0.0 "
+      type="text/javascript"
+    ></script>
+    <script src="assets/js/demo.js"></script>
+    
+     <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
-</head>
 
-<body>
-    <input type="text" id="idInput" placeholder="ID 입력">
-    <button onclick="fetchDataById()">데이터 가져오기</button>
-    <pre id="data"></pre>
-    <div id="gauge_chart" style="width: 400px; height: 200px;"></div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
-            authDomain: "model-craft-391306.firebaseapp.com",
-            databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
-            projectId: "model-craft-391306",
-            storageBucket: "model-craft-391306.appspot.com",
-            messagingSenderId: "54080375203",
-            appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
-            measurementId: "G-GN648GFCTK"
-        };
-        firebase.initializeApp(firebaseConfig);
+    
+  </head>
+  <body class="sidebar-bg">
+    <div id="content">
+      
+      <div id="dashboard">
 
-        function fetchDataById() {
-            var inputId = document.getElementById('idInput').value;
-            var dbRef = firebase.database().ref('A-1/' + inputId);
-            dbRef.once("value").then(function (snapshot) {
-                var data = snapshot.val();
-                if (data) {
-                    var content = JSON.stringify(data, null, 2);
-                    document.getElementById('data').innerText = content;
-                    drawGaugeChart(data['Grade']);
-                } else {
-                    document.getElementById('data').innerText = '해당 ID의 데이터를 찾을 수 없습니다.';
-                }
-            }).catch(function (error) {
-                console.log("데이터 읽기 실패: ", error);
-            });
-        }
+        <div class="col-md-8-row">
+          <div>
+            <div>
+              <div id="chart-container">
+                <canvas id="chart-do"></canvas>
+              </div>
+            </div>
+            
+          </div>
+        </div>
 
-        function drawGaugeChart(grade) {
-            var chart = echarts.init(document.getElementById('gauge_chart'));
-            var option = {
-                series: [{
-                    type: 'gauge',
-                    min: 0,
-                    max: 6,
-                    splitNumber: 6, // 축을 분할할 선의 수
-                    axisLabel: {
-                        formatter: function (value) {
-                            return value === 0 || value === 6 ? '' : value; // 0과 6은 표시하지 않음
-                        }
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            width: 10,
-                            color: [
-                                [0.5 / 6, '#ffffff'],
-                                [1.5 / 6, '#00ffff'],
-                                [2.5 / 6, '#00ff00'],
-                                [3.5 / 6, '#ffff00'],
-                                [4.5 / 6, '#ffcc00'],
-                                [5.5 / 6, '#ff0000'],
-                                [6, '#ffffff']
-                            ]
-                        }
-                    },
-                    detail: {
-                        valueAnimation: true,
-                        fontSize: 20,
-                        formatter: 'Grade: {value}'
-                    },
-                    data: [{ value: grade }]
-                }]
-            };
-            chart.setOption(option);
-        }
-    </script>
-</body>
+        <div class="col-md-9">
+          <div>
+            <div>
+              <h1 class="time" id="clock"></h1>
+              <div>
+                <div id="map"
+                   style="width: 500px; height: 350px; position: relative; z-index: 1;"
+              ></div> 
+              <div id="data-display" style="display: none;">
+                <h4 class="word">선택한 위치 정보</h4>
+                <p id="data-lat">위도: </p>
+                <p id="data-lng">경도: </p>
+                <p id="data-value">레벨: </p>
+              </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div>
+            <div>
+            </div>
+            <div id="data" style="display: none"></div>
+    <canvas id="myPieChart"></canvas> <!-- Pie Chart를 그릴 Canvas 추가 -->
+          </div>
+        </div>
 
+        <div class="col-md-8-row">
+          <div>
+            <div>
+              <div id="chart-container">
+                <canvas id="chart-ph"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-8-row">
+          <div>
+            <div>
+              <div id="chart-container">
+                
+                <div id="gaugeChart" style="width: 400px; height: 200px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-8-row">
+          <div>
+            <div>
+            </div>
+            <div id="chart-container">
+              <canvas id="chart-tn"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+  
+  <script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap"
+  async
+  defer
+></script>
+<script>
+  
+</script>
+<script src="./test.js"></script>
+<!-- <script src="./assets/js/dashBoardGrid.js" async defer></script> -->
 </html>

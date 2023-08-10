@@ -19,11 +19,12 @@ function autoFocus(data) {
     const content = JSON.stringify(data, null, 2);
   document.getElementById("data").innerText = content;
   drawPieChart(data);
+  drawGaugeChart(data['value']);
 }
 
 function fetchDataById() {
   
-  var inputId = document.getElementById("idInput").value;
+  
   // 해당 ID 값에 대한 데이터를 가져옵니다.
   var dbRef = firebase.database().ref("A-1/" + inputId);
 
@@ -35,6 +36,7 @@ function fetchDataById() {
         var content = JSON.stringify(data, null, 2);
         document.getElementById("data").innerText = content;
          autoFocus(); // Pie Chart 그리기 함수 호출
+         
       } else {
         document.getElementById("data").innerText =
           "해당 ID의 데이터를 찾을 수 없습니다.";
@@ -57,7 +59,6 @@ function drawPieChart(data) {
 
   // 제외하고 싶은 키 목록
   const excludeKeys = [
-    "value",
     "coastal_name",
     "layer_name",
     "times",
@@ -103,7 +104,47 @@ function drawPieChart(data) {
 
 autoFocus();
 
-// 지도 관련 코드
+
+function drawGaugeChart(value) {
+  var chart = echarts.init(document.getElementById("gaugeChart")); // 변경된 부분
+  var option = {
+    series: [
+      {
+        type: "gauge",
+        min: 0,
+        max: 6,
+        splitNumber: 6, // 축을 분할할 선의 수
+        axisLabel: {
+          formatter: function (value) {
+            return value === 0 || value === 6 ? "" : value; // 0과 6은 표시하지 않음
+          },
+        },
+        axisLine: {
+          lineStyle: {
+            width: 10,
+            color: [
+              [0.5 / 6, "#ffffff"],
+              [1.5 / 6, "#00ffff"],
+              [2.5 / 6, "#00ff00"],
+              [3.5 / 6, "#ffff00"],
+              [4.5 / 6, "#ffcc00"],
+              [5.5 / 6, "#ff0000"],
+              [6, "#ffffff"],
+            ],
+          },
+        },
+        detail: {
+          valueAnimation: true,
+          fontSize: 20,
+          formatter: "Grade: {value}",
+        },
+        data: [{ value: value }],
+      },
+    ],
+  };
+  chart.setOption(option);
+}
+
 function fetchCoordinates(callback) {
   const dbRef = firebase.database().ref("A-1");
   dbRef
@@ -158,8 +199,7 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
     center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
-    mapTypeId: "terrain",
-    styles: [
+    mapTypeId: "terrain", styles: [
       {
         elementType: "geometry",
         stylers: [
@@ -408,7 +448,7 @@ function updateDataDisplay(coordinateData) {
     }
   }
 
-  dataContainer.style.display = "none";
+  
 }
 function updateClock() {
   const now = new Date();
@@ -426,6 +466,7 @@ function onCoordinatesDataFetched(coordinates) {
   updateClock();
   autoFocus(); // Pie 차트 관련 함수 호출
   initMap(); // 지도 관련 함수 호출
+  
 }
 
 // 데이터를 불러온 다음 onCoordinatesDataFetched 함수를 호출합니다.

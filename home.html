@@ -31,7 +31,7 @@
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    <script src="./assets/js/Chart.js"></script>
+    
     <script
       src="assets/js/core/jquery.3.2.1.min.js"
       type="text/javascript"
@@ -49,13 +49,15 @@
       src="assets/js/light-bootstrap-dashboard.js?v=2.0.0 "
       type="text/javascript"
     ></script>
-    <script src="assets/js/demo.js"></script>
+    
     
      <link rel="stylesheet" href="styles.css">
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
+
+
     
   </head>
   <body class="sidebar-bg">
@@ -74,25 +76,18 @@
           </div>
         </div>
 
-        <div class="col-md-9">
+
+        <div class="col-md-8-row">
           <div>
             <div>
-              <h1 class="time" id="clock"></h1>
-              <div>
-                <div id="map"
-                   style="width: 500px; height: 350px; position: relative; z-index: 1;"
-              ></div> 
-              <div id="data-display" style="display: none;">
-                <h4 class="word">선택한 위치 정보</h4>
-                <p id="data-lat">위도: </p>
-                <p id="data-lng">경도: </p>
-                <p id="data-value">레벨: </p>
+              <div id="chart-container">
+                <h1 class="time" id="clock"></h1>
+                <div id="gaugeChart" style="width: 400px; height: 200px;"></div>
               </div>
-              </div>
-              
             </div>
           </div>
         </div>
+        
         <div class="col-md-9">
           <div>
             <div>
@@ -112,17 +107,25 @@
           </div>
         </div>
 
-        <div class="col-md-8-row">
+        <div class="col-md-9">
           <div>
             <div>
-              <div id="chart-container">
-                <canvas id="chart-equation"></canvas>
-                <!-- <div id="gauge_chart" style="width: 400px; height: 200px;"></div> -->
+              
+              <div>
+                <div id="map"
+                   style="width: 500px; height: 350px; position: relative; z-index: 1;"
+              ></div> 
+              <div id="data-display" style="display: none;">
+                <h4 class="word">선택한 위치 정보</h4>
+                <p id="data-lat">위도: </p>
+                <p id="data-lng">경도: </p>
+                <p id="data-value">레벨: </p>
               </div>
+              </div>
+              
             </div>
           </div>
         </div>
-
         <div class="col-md-8-row">
           <div>
             <div>
