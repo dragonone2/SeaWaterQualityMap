@@ -53,29 +53,19 @@
     
      <link rel="stylesheet" href="styles.css">
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     
     
   </head>
   <body class="sidebar-bg">
-    <div id="sidebar">
-      <button id="sidebarClose" class="menu-icon-container"><i class="fas fa-chevron-left"></i></button>
-      <h2>메뉴</h2>
-      <ul>
-        <li><a href="./home.html">대시보드</a></li>
-        <li><a href="./gridmap.html">지도</a></li>
-      </ul>
-    </div>
     <div id="content">
-      <button id="sidebarToggle" class="menu-icon-container">
-        <i class="fas fa-bars"></i>
-      </button>
       
       <div id="dashboard">
-        
-        <div class="col-md-7-row">
+
+        <div class="col-md-8-row">
           <div>
             <div>
-              <h4>구성 요소 별 변화 그래프</h4>
               <div id="chart-container">
                 <canvas id="chart-do"></canvas>
               </div>
@@ -84,19 +74,16 @@
           </div>
         </div>
 
-        <div class="col-md-11">
+        <div class="col-md-9">
           <div>
             <div>
-              <h4>수질 조사 위치</h4>
-              
-            </div>
-            <div>
+              <h1 class="time" id="clock"></h1>
               <div>
                 <div id="map"
                    style="width: 500px; height: 350px; position: relative; z-index: 1;"
               ></div> 
               <div id="data-display" style="display: none;">
-                <h4>선택한 위치 정보</h4>
+                <h4 class="word">선택한 위치 정보</h4>
                 <p id="data-lat">위도: </p>
                 <p id="data-lng">경도: </p>
                 <p id="data-value">레벨: </p>
@@ -106,22 +93,18 @@
             </div>
           </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-9">
           <div>
             <div>
-              <h4 class="card-title">수질 구성 요소</h4>
-            </div>
-            <div id="chart-container">
-              <canvas id="chart"></canvas>
             </div>
             <div id="data" style="display: none"></div>
+    <canvas id="myPieChart"></canvas> <!-- Pie Chart를 그릴 Canvas 추가 -->
           </div>
         </div>
 
-        <div class="col-md-7-row">
+        <div class="col-md-8-row">
           <div>
             <div>
-              <h4>구성 요소 별 변화 그래프</h4>
               <div id="chart-container">
                 <canvas id="chart-ph"></canvas>
               </div>
@@ -129,21 +112,20 @@
           </div>
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-8-row">
           <div>
             <div>
-              <h4>수질 등급 변화 그래프</h4>
               <div id="chart-container">
                 <canvas id="chart-equation"></canvas>
+                <!-- <div id="gauge_chart" style="width: 400px; height: 200px;"></div> -->
               </div>
             </div>
           </div>
         </div>
 
-        <div class="col-md-7-row">
+        <div class="col-md-8-row">
           <div>
             <div>
-              <h4>구성 요소 별 변화 그래프</h4>
             </div>
             <div id="chart-container">
               <canvas id="chart-tn"></canvas>
@@ -152,7 +134,7 @@
         </div>
       </div>
     </div>
-    <script src="./assets/js/sidebar.js"></script>
+    
   </body>
   
   <script
@@ -160,5 +142,9 @@
   async
   defer
 ></script>
-<script src="./assets/js/dashBoardGrid.js" async defer></script>
+<script>
+  
+</script>
+<script src="./assets/js/Dashboard.js"></script>
+<!-- <script src="./assets/js/dashBoardGrid.js" async defer></script> -->
 </html>

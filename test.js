@@ -1,94 +1,66 @@
-const csvFilePath = './kr_sea_data.csv';
-const gridSize = 0.005;
-const rectangles = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
+  authDomain: "model-craft-391306.firebaseapp.com",
+  databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
+  projectId: "model-craft-391306",
+  storageBucket: "model-craft-391306.appspot.com",
+  messagingSenderId: "54080375203",
+  appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
+  measurementId: "G-GN648GFCTK"
+};
+firebase.initializeApp(firebaseConfig);
 
-function getBounds(coordinate, zoom) {
-  const southWest = new google.maps.LatLng(
-    parseFloat((Math.round(coordinate.lat / gridSize) * gridSize).toFixed(4)),
-    parseFloat((Math.round(coordinate.lng / gridSize) * gridSize).toFixed(4))
-  );
-
-  const northEast = new google.maps.LatLng(
-    parseFloat((southWest.lat() + gridSize).toFixed(4)),
-    parseFloat((southWest.lng() + gridSize).toFixed(4))
-  );
-
-  return new google.maps.LatLngBounds(southWest, northEast);
-}
-
-function getColorByValue(value) {
-  if (value <= 10) {
-    return '#00FF00';
-  } else if (value > 10 && value <= 20) {
-    return '#FFFF00';
-  } else {
-    return '#FF0000';
-  }
-}
-
-function initMap() {
-  const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 13,
-    center: {lat: 37.7749, lng: -122.4194},
-    mapTypeId: 'terrain'
-  });
-
-  readCSVFile(csvFilePath, (coordinates) => {
-    coordinates.forEach((coordinate) => {
-      const rectangle = new google.maps.Rectangle({
-        strokeColor: getColorByValue(coordinate.value),
-        strokeOpacity: 0,
-        strokeWeight: 1,
-        fillColor: getColorByValue(coordinate.value),
-        fillOpacity: 0.9,
-        map,
-        zIndex: coordinate.value,
-        bounds: getBounds(coordinate, map.getZoom()),
-      });
-
-      rectangles.push({rectangle: rectangle, coordinate: coordinate});
-
-      rectangle.addListener("click", () => {
-        updateDataDisplay(coordinate.lat, coordinate.lng, coordinate.value);
-        document.getElementById("data-display").style.display = "block";
-      });
-    });
-
-    google.maps.event.addListener(map, 'zoom_changed', () => {
-      rectangles.forEach((rect) => {
-        rect.rectangle.setBounds(getBounds(rect.coordinate, map.getZoom()));
-      });
-    });
+function fetchDataById() {
+  var inputId = document.getElementById('idInput').value;
+  var dbRef = firebase.database().ref('A-1/' + inputId);
+  dbRef.once("value").then(function (snapshot) {
+      var data = snapshot.val();
+      if (data) {
+          var content = JSON.stringify(data, null, 2);
+          document.getElementById('data').innerText = content;
+          drawGaugeChart(data['Grade']);
+      } else {
+          document.getElementById('data').innerText = '해당 ID의 데이터를 찾을 수 없습니다.';
+      }
+  }).catch(function (error) {
+      console.log("데이터 읽기 실패: ", error);
   });
 }
 
-function readCSVFile(filePath, callback) {
-  fetch(filePath)
-    .then(response => response.text())
-    .then(data => {
-      data = data.split('\n');
-      const coordinates = [];
-
-      data.forEach((line) => {
-        const splitLine = line.split(',');
-
-        if (splitLine.length === 3) {
-          const coordinate = {
-            lat: parseFloat(splitLine[0]),
-            lng: parseFloat(splitLine[1]),
-            value: parseFloat(splitLine[2])
-          };
-
-          coordinates.push(coordinate);
-        }
-      });
-
-      callback(coordinates);
-    });
-}
-
-function updateDataDisplay(latitude, longitude, value) {
-  document.getElementById("data-lat").innerText = `Latitude: ${latitude}`;
-  document.getElementById("data-lng").innerText = `Longitude: ${longitude}`;
-  document.getElementById("data-value").innerText = `Value: ${value}`;
+function drawGaugeChart(grade) {
+  var chart = echarts.init(document.getElementById('gauge_chart'));
+  var option = {
+      series: [{
+          type: 'gauge',
+          min: 0,
+          max: 6,
+          splitNumber: 6, // 축을 분할할 선의 수
+          axisLabel: {
+              formatter: function (value) {
+                  return value === 0 || value === 6 ? '' : value; // 0과 6은 표시하지 않음
+              }
+          },
+          axisLine: {
+              lineStyle: {
+                  width: 10,
+                  color: [
+                      [0.5 / 6, '#ffffff'],
+                      [1.5 / 6, '#00ffff'],
+                      [2.5 / 6, '#00ff00'],
+                      [3.5 / 6, '#ffff00'],
+                      [4.5 / 6, '#ffcc00'],
+                      [5.5 / 6, '#ff0000'],
+                      [6, '#ffffff']
+                  ]
+              }
+          },
+          detail: {
+              valueAnimation: true,
+              fontSize: 20,
+              formatter: 'Grade: {value}'
+          },
+          data: [{ value: grade }]
+      }]
+  };
+  chart.setOption(option);
 }

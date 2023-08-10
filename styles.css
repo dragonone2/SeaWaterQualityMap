@@ -59,29 +59,35 @@
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
+  .col-md-6-row {
+    -ms-flex: 0 0 66.666667%;
+    flex: 0 0 66.666667%;
+    max-width: 70.666667%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden; /* 이 줄을 추가하세요 */
+  }
   .col-md-7 {
     -ms-flex: 0 0 58.333333%;
     flex: 0 0 58.333333%;
     max-width: 70.333333%;
-    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden; /* 이 줄을 추가하세요 */
   }
   .col-md-7-row{
     -ms-flex: 0 0 58.333333%;
     flex: 0 0 58.333333%;
     max-width: 70.333333%;
-    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
      height: 250px;
+     overflow: hidden; /* 이 줄을 추가하세요 */
      
   }
+  
   .col-md-8 {
     -ms-flex: 0 0 66.666667%;
     flex: 0 0 66.666667%;
     max-width: 70.666667%;
-    background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
@@ -89,9 +95,10 @@
     -ms-flex: 0 0 75%;
     flex: 0 0 75%;
     max-width: 75%;
-    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  .word {
+    color: #ffffff;
   }
   .col-md-10 {
     -ms-flex: 0 0 83.333333%;
@@ -99,17 +106,13 @@
     max-width: 83.333333%;
     height: 330px;
     width: 600px;
-    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
   .col-md-11 {
     -ms-flex: 0 0 83.333333%;
     flex: 0 0 95.333333%;
     max-width: 83.333333%;
-    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow: hidden; /* 이 줄을 추가하세요 */
   }
   body {
@@ -153,7 +156,7 @@
   }
   /* 테마 */
 .sidebar-bg {
-    background-image: linear-gradient(to bottom right, #3484a4, #5ba8c6, #87ceeb);
+    background-image: linear-gradient(to bottom right, #0B0B61, #0B173B, #07102d);
   }
   
   /* 메뉴 버튼 */
@@ -241,3 +244,17 @@
       cursor: pointer;
       margin-top: 20px;
   }
+  .time {
+    height: 100%;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#clock {
+    font-size: 4rem;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
