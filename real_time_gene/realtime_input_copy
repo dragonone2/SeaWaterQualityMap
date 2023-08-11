@@ -1,0 +1,100 @@
+
+
+# 우에노고홍
+# 기능 :データベースを１～から５０まで作り、その中のデータを１からコードが止まるまで続く
+# 修正必要：中の２からのデータもランダムである部分。またコードの性質上一気にかけない部分
+# 추가 예정 : 탁도 데이터
+# 저장 주소 :데이터베이스>>A-1~A-50
+
+# random year_data generate python code
+import pandas as pd
+import numpy as np
+import datetime
+import random
+import os
+from firebase_admin import initialize_app, credentials, db
+from datetime import datetime, timedelta
+import time
+
+min_values = {
+    "temperature": 12.92,
+    "salinity": 29.06,
+    "pH": 8.05,
+    "dissolved_oxygen": 7.6,
+    "COD": 1.03,
+    "chlorophyll": 0.43,
+    "TN": 121.6,
+    "DIP": 4.1,
+    "TP": 13.6,
+    "Si_OH4": 100.9,
+    "SPM": 4.4,
+    "DIN": 30.2
+}
+max_values = {
+    "temperature": 18.95,
+    "salinity": 33.87,
+    "pH": 8.26,
+    "dissolved_oxygen": 10.04,
+    "COD": 2.21,
+    "chlorophyll": 4.2,
+    "TN": 389.0,
+    "DIP": 25.9,
+    "TP": 39.3,
+    "Si_OH4": 476.5,
+    "SPM": 50.4,
+    "DIN": 237.1
+}
+ranges = {
+    '제주도 ': {'lat': (31.0, 34.50), 'lon': (121.8, 129.3), 'value_probs': np.array([0.7, 0, 0, 0, 0.05])},
+    '동종국해(제주도 아래)': {'lat': (28.0, 31.0), 'lon': (122.0, 130.0)},
+    '황해 1': {'lat': (34.5, 35.8), 'lon': (120.1, 126.20), 'value_probs': np.array([0.6, 0.1, 0.1, 0.1, 0.1])},
+    '황해 2': {'lat': (35.8, 36.8), 'lon': (121.1, 126.50)},
+    '동해 아래 1': {'lat': (37.3, 41.5), 'lon': (128.8, 138.5)},
+    '동해 아래 2': {'lat': (35.4, 41.5), 'lon': (130.5, 135.5)},
+    '동해 위': {'lat': (41.5, 42.5), 'lon': (130.2, 139.5)},
+    '후쿠오카 한국': {'lat': (33.58, 34.84), 'lon': (127.78, 130.26)},
+}
+
+num_rows = 1
+random_columns = list(min_values.keys())
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+cred_path = os.path.join(
+    current_dir, 'model-craft-391306-firebase-adminsdk-v8jx8-8b0ef4e372.json')
+cred = credentials.Certificate(cred_path)
+app = initialize_app(
+    cred, {'databaseURL': 'https://model-craft-391306-default-rtdb.firebaseio.com/'})
+
+# テーブル名リストを生成 / 테이블 이름 리스트 생성
+table_names = [f"A-{i}" for i in range(1, 2)]  # A-1からA-50までのテーブル名をリスト化
+
+# 各テーブルごとのカウンタを持つ辞書
+table_counters = {name: 1 for name in table_names}
+latest_data = None
+while True:
+    for table_name in table_names:  # 各テーブル名に対してループ
+        # 고정 값 정의 / 固定値を定義
+        
+        ref = db.reference(table_name)
+        latest_data_snapshot = ref.order_by_key().limit_to_last(1).get()
+        latest_id = None
+        if latest_data_snapshot:
+            latest_id = next(iter(latest_data_snapshot))
+            print(f"Latest ID: {latest_id}")
+
+        if latest_data:
+            latest_id = list(latest_data[0].keys())[0] # ID 가져오기
+            latest_data_values = latest_data[latest_id] # ID에 해당하는 데이터 가져오기
+            latest_time_str = latest_data_values['times']
+            latest_time = datetime.strptime(latest_time_str, "%Y-%m-%d %H:%M:%S")
+            new_time = latest_time + timedelta(hours=1)
+        else: # 데이터가 없을 경우 현재 시간 사용
+            new_time = datetime.now() 
+
+                
+            print(new_time)
+            fixed_values = {
+                "times": new_time,
+                "area": np.random.choice(['제주도 ','동중국해(제주도 아래)', '황해 1','황해 2','동해 아래 1','동해 아래 2','동해 위','후쿠오카 한국'], num_rows),
+                "layer_name": "표층",
+            }

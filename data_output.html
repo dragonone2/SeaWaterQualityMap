@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수온 데이터 표시</title>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
+</head>
+
+<body>
+    <input type="text" id="idInput" placeholder="ID 입력">
+    <button onclick="fetchDataById()">데이터 가져오기</button>
+    <pre id="data"></pre>
+    <div id="bar_chart" style="width: 400px; height: 200px;"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
+            authDomain: "model-craft-391306.firebaseapp.com",
+            databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
+            projectId: "model-craft-391306",
+            storageBucket: "model-craft-391306.appspot.com",
+            messagingSenderId: "54080375203",
+            appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
+            measurementId: "G-GN648GFCTK"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function fetchDataById() {
+            var inputId = document.getElementById('idInput').value;
+            var dbRef = firebase.database().ref('A-1/' + inputId);
+            dbRef.once("value").then(function (snapshot) {
+                var data = snapshot.val();
+                if (data) {
+                    var content = JSON.stringify(data, null, 2);
+                    document.getElementById('data').innerText = content;
+                    drawBarChart(data['temperature']);
+                } else {
+                    document.getElementById('data').innerText = '해당 ID의 데이터를 찾을 수 없습니다.';
+                }
+            }).catch(function (error) {
+                console.log("데이터 읽기 실패: ", error);
+            });
+        }
+
+        function drawBarChart(temperature) {
+            var chart = echarts.init(document.getElementById('bar_chart'));
+            var option = {
+                xAxis: {
+                    type: 'category',
+                    data: ['수온']
+                },
+                yAxis: {
+                    type: 'value',
+                    max: 35 // Y축의 최대 값 설정
+                },
+                series: [{
+                    data: [temperature],
+                    type: 'bar',
+                    markLine: {
+                        data: [{ yAxis: 25, name: '경고 수준' }], // 25로 고정된 경고 수준
+                        lineStyle: {
+                            color: 'red'
+                        }
+                    }
+                }]
+            };
+            chart.setOption(option);
+        }
+    </script>
+</body>
+
+</html>
