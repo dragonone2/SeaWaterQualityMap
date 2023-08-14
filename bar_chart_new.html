@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rounded Bars Chart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+</head>
+
+<body>
+    A: <input type="range" id="scrollbarA" min="1" max="50" step="1" value="1">
+    Move: <input type="range" id="scrollbarMove" min="1" max="50" step="1" value="1">
+    <button id="searchButton">検索</button>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <script>
+        // Firebase設定
+        var firebaseConfig = {
+            apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
+            authDomain: "model-craft-391306.firebaseapp.com",
+            databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
+            projectId: "model-craft-391306",
+            storageBucket: "model-craft-391306.appspot.com",
+            messagingSenderId: "54080375203",
+            appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
+            measurementId: "G-GN648GFCTK",
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+        var chart;
+
+        Chart.elements.Rectangle.prototype.draw = function () {
+            var ctx = this._chart.ctx;
+            var vm = this._view;
+            var left, right, top, bottom, signX, signY, borderSkipped;
+            var borderWidth = vm.borderWidth;
+
+            // 丸みをつける半径
+            var radius = 10;//TODO
+
+            // 描画方向をセット
+            if (!vm.horizontal) {
+                left = vm.x - vm.width / 2;
+                right = vm.x + vm.width / 2;
+                top = vm.y;
+                bottom = vm.base;
+                signX = 1;
+                signY = bottom > top ? 1 : -1;
+                borderSkipped = vm.borderSkipped || 'bottom';
+            } else {
+                left = vm.base;
+                right = vm.x;
+                top = vm.y - vm.height / 2;
+                bottom = vm.y + vm.height / 2;
+                signX = right > left ? 1 : -1;
+                signY = 1;
+                borderSkipped = vm.borderSkipped || 'left';
+            }
+
+            // 円弧を描画する際の方向
+            if (borderSkipped && typeof borderSkipped === 'string') {
+                borderSkipped = borderSkipped.toLowerCase();
+            }
+
+            // ボーダーの幅をセット
+            if (borderWidth) {
+                var barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
+                borderWidth = borderWidth > barSize ? barSize : borderWidth;
+                var halfStroke = borderWidth / 2;
+                // ボーダーの描画方向を調整
+                var borderLeft = left + (borderSkipped !== 'left' ? halfStroke * signX : 0);
+                var borderRight = right + (borderSkipped !== 'right' ? -halfStroke * signX : 0);
+                var borderTop = top + (borderSkipped !== 'top' ? halfStroke * signY : 0);
+                var borderBottom = bottom + (borderSkipped !== 'bottom' ? -halfStroke * signY : 0);
+                // 円弧の半径を調整
+                if (borderLeft !== borderRight) {
+                    top = borderTop;
+                    bottom = borderBottom;
+                }
+                if (borderTop !== borderBottom) {
+                    left = borderLeft;
+                    right = borderRight;
+                }
+            }
+
+            ctx.beginPath();
+            ctx.fillStyle = vm.backgroundColor;
+            ctx.strokeStyle = vm.borderColor;
+            ctx.lineWidth = borderWidth;
+
+            // 角に丸みをつけたバーの描画
+            ctx.moveTo(left + radius, top);
+            ctx.lineTo(right - radius, top);
+            ctx.quadraticCurveTo(right, top, right, top + radius);
+            ctx.lineTo(right, bottom - radius);
+            ctx.quadraticCurveTo(right, bottom, right - radius, bottom);
+            ctx.lineTo(left + radius, bottom);
+            ctx.quadraticCurveTo(left, bottom, left, bottom - radius);
+            ctx.lineTo(left, top + radius);
+            ctx.quadraticCurveTo(left, top, left + radius, top);
+            ctx.closePath();
+            ctx.fill();
+
+            if (borderWidth) {
+                ctx.stroke();
+            }
+        };
+
+        // データの取得関数
+        function fetchData() {
+            var scrollbarAValue = document.getElementById('scrollbarA').value;
+            var scrollbarMoveValue = document.getElementById('scrollbarMove').value;
+            var path = 'A-' + String(scrollbarAValue).padStart(2, '0') + '/move' + String(scrollbarMoveValue).padStart(2, '0');
+
+
+            database.ref(path).once('value').then(function (snapshot) {
+                var rawData = snapshot.val();
+
+                // temperature、DIN、DIPだけを抽出する
+                var data = {
+                    temperature: rawData.temperature,
+                    //DIN: rawData.DIN,
+                    //DIP: rawData.DIP
+                };
+
+                // データの加工（例）
+                var labels = Object.keys(data);
+                var values = Object.values(data);
+                var maxVal = [0, 25];//TODO
+                var maxY = maxVal[1]
+                var yValue = maxVal[1] - rawData.temperature; // 25 - 20 = 5
+
+                var trackBars = new Array(values.length).fill(yValue); // TrackBarのデータ
+
+                // 左に50％移動するためには、ラベルの長さの半分だけX座標を減らす
+                var adjustedValues = values.map((value, index) => ({ x: index - (labels.length / 2), y: value }));
+
+                // ラベルの長さの半分だけX座標を増やすための調整
+                var adjustedTrackBars = trackBars.map((value, index) => ({ x: index + (labels.length / 2), y: value }));
+
+
+                // グラフの描画
+                var ctx = document.getElementById('myChart').getContext('2d');
+                if (chart) {
+                    chart.destroy();
+                }
+                var commonData = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            // TrackBarのデータセット
+                            data: trackBars,
+                            backgroundColor: '#d3d3d3',
+                            order: 4 // 最下層に配置
+                        },
+                        {
+                            // バーチャート用のデータセット
+                            data: values,
+                            backgroundColor: '#82e29c',
+                            order: 3 // 中間層に配置
+                        },
+                        {
+                            // 散布図用のデータセット
+                            type: 'scatter',
+                            data: values.map((value, index) => ({ x: index, y: value })),
+                            backgroundColor: '#d3d3d3',
+                            pointRadius: 8, // 点の半径を3に設定 <- ここにコンマを追加
+                            order: 1
+                        },
+                        {
+                            // 散布図用のデータセット
+                            type: 'scatter',
+                            data: values.map((value, index) => ({ x: index, y: value })),
+                            backgroundColor: '#82e29c',
+                            pointRadius: 13, // 点の半径を6に設定 <- ここにコンマを追加
+                            order: 2 // 最上層に配置
+                        },
+                    ]
+                };
+                chart = new Chart(ctx, {
+                    type: 'bar', // メインのタイプとしてバーチャートを指定
+                    data: commonData,
+                    options: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        scales: {
+                            xAxes: [{
+                                stacked: true, // バーチャートの場合は、通常はxAxesを調整します
+                                barPercentage: 0.05, // バーの幅を調整（0から1の値）
+                                categoryPercentage: 0.5, // カテゴリ内でのバーの幅を調整（0から1の値）
+                                gridLines: {
+                                    display: true, // 横軸のグリッド（縦線たち）を非表示
+                                    drawBorder: false // 横軸の線を非表示
+                                }
+                            }],
+                            yAxes: [{
+                                stacked: true,
+                                ticks: {
+                                    // maxYに基づいてticksの値を設定
+                                    max: maxY
+                                },
+                                gridLines: {
+                                    display: true, // 横軸のグリッド（縦線たち）を表示
+                                    drawBorder: false, // 横軸の線を非表示
+                                    borderDash: [10, 100]
+                                }
+                            }]
+                        },
+                        // Rounded Barsの設定
+                        elements: {
+                            rectangle: {
+                                borderWidth: 1,
+                                backgroundColor: '#82e29c',
+                                borderSkipped: 'bottom'
+                            }
+                        },
+                    }
+                });
+            });
+        }
+        // スクロールバーや検索ボタンが変更されたときにデータを取得し直す
+        document.getElementById('scrollbarA').addEventListener('change', fetchData);
+        document.getElementById('scrollbarMove').addEventListener('change', fetchData);
+        document.getElementById('searchButton').addEventListener('click', fetchData);
+
+        // 初回データ取得
+        fetchData();
+    </script>
+</body>
+
+</html>
