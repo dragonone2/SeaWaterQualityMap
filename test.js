@@ -15,18 +15,17 @@ function autoFocus(data) {
   if (!data) {
     return;
   }
-  
-    const content = JSON.stringify(data, null, 2);
-  document.getElementById("data").innerText = content;
-  drawPieChart(data);
-  drawGaugeChart(data);
-}
 
+  const content = JSON.stringify(data, null, 2);
+  document.getElementById("data").innerText = content;
+  drawGaugeChart(data["value"]);
+  drawPieChart(data);
+}
 function fetchDataById() {
   
   
   // 해당 ID 값에 대한 데이터를 가져옵니다.
-  var dbRef = firebase.database().ref("A-1/" + inputId);
+  var dbRef = firebase.database().ref("/" + inputId);
 
   dbRef
     .once("value")
@@ -44,6 +43,54 @@ function fetchDataById() {
     })
     .catch(function (error) {
       console.log("데이터 읽기 실패: ", error);
+    });
+}
+function fetchAllCoordinates(callback) {
+  const promises = [];
+
+  for (let i = 1; i <= 50; i++) {
+    const id = "A-" + String(i).padStart(2, "0");
+    const dbRef = firebase.database().ref(id);
+    promises.push(
+      dbRef.once("value").then((snapshot) => {
+        const coordinates = [];
+        snapshot.forEach((childSnapshot) => {
+          const data = childSnapshot.val();
+          const coordinate = {
+            lat: parseFloat(data.latitude),
+            lng: parseFloat(data.longitude),
+            value: data.Grade,
+            cod: data.COD,
+            dip: data.DIP,
+            sd: data.SD,
+            spm: data.SPM,
+            si: data.Si_OH4,
+            tn: data.TN,
+            tp: data.TP,
+            ch: data.chlorophyll,
+            oxg: data.dissolved_oxygen,
+            ph: data.pH,
+            sal: data.salinity,
+            temp: data.temperature,
+          };
+
+          if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
+            coordinates.push(coordinate);
+          }
+        });
+
+        return coordinates;
+      })
+    );
+  }
+
+  Promise.all(promises)
+    .then((results) => {
+      const allCoordinates = results.flat();
+      callback(allCoordinates);
+    })
+    .catch((error) => {
+      console.log("데이터 읽기 실패:", error);
     });
 }
 
@@ -105,6 +152,8 @@ function drawPieChart(data) {
 autoFocus();
 
 
+
+
 function drawGaugeChart(value) {
   var chart = echarts.init(document.getElementById("gaugeChart")); // 변경된 부분
   var option = {
@@ -145,43 +194,7 @@ function drawGaugeChart(value) {
   chart.setOption(option);
 }
 
-function fetchCoordinates(callback) {
-  const dbRef = firebase.database().ref("A-1");
-  dbRef
-    .once("value")
-    .then((snapshot) => {
-      const coordinates = [];
-      snapshot.forEach((childSnapshot) => {
-        const data = childSnapshot.val();
-        const coordinate = {
-          lat: parseFloat(data.latitude),
-          lng: parseFloat(data.longitude),
-          value: data.Grade,
-          cod: data.COD,
-          dip: data.DIP,
-          sd: data.SD,
-          spm: data.SPM,
-          si: data.Si_OH4,
-          tn: data.TN,
-          tp: data.TP,
-          ch: data.chlorophyll,
-          oxg: data.dissolved_oxygen,
-          ph: data.pH,
-          sal: data.salinity,
-          temp: data.temperature,
-           
-        };
 
-        if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
-          coordinates.push(coordinate);
-        }
-      });
-      callback(coordinates);
-    })
-    .catch((error) => {
-      console.log("데이터 읽기 실패:", error);
-    });
-}
 
 function getBounds(coordinate, zoomLevel) {
   const delta = 5 / Math.pow(2, zoomLevel);
@@ -199,8 +212,7 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
     center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
-    mapTypeId: "terrain",
-    styles: [
+    mapTypeId: "terrain", styles: [
       {
         elementType: "geometry",
         stylers: [
@@ -380,7 +392,7 @@ function initMap() {
     }
   }
 
-  fetchCoordinates((coordinates) => {
+  fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
       const rectangle = new google.maps.Rectangle({
         strokeColor: getColorByValue(coordinate.value),
@@ -415,6 +427,8 @@ function initMap() {
     });
   });
 }
+
+
 
 function fetchCoordinateDataByPosition(coordinate, callback) {
   // 좌표 데이터에서 해당 위치에 맞는 데이터를 찾습니다.
@@ -462,13 +476,12 @@ function updateClock() {
 }
 window.coordinatesData = null;
 
-function onCoordinatesDataFetched(coordinates) {
+function onAllCoordinatesDataFetched(coordinates) {
   window.coordinatesData = coordinates;
   updateClock();
   autoFocus(); // Pie 차트 관련 함수 호출
   initMap(); // 지도 관련 함수 호출
-  drawGaugeChart();
 }
 
 // 데이터를 불러온 다음 onCoordinatesDataFetched 함수를 호출합니다.
-fetchCoordinates(onCoordinatesDataFetched);
+fetchAllCoordinates(onAllCoordinatesDataFetched);
