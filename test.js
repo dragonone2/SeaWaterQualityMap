@@ -18,8 +18,10 @@ function autoFocus(data) {
 
   const content = JSON.stringify(data, null, 2);
   document.getElementById("data").innerText = content;
-  drawGaugeChart(data["value"]);
+  drawBulletChart(data["value"], '#bullet-chart');
   drawPieChart(data);
+  drawBarChart(data['temp']);
+  checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
 }
 function fetchDataById() {
   
@@ -94,6 +96,116 @@ function fetchAllCoordinates(callback) {
     });
 }
 
+
+function drawBulletChart(value, selector) {
+  const width = 600;
+  const height = 50;
+  
+  const maxValue = 5; // 최대 값 설정이 필요하다면 이 변수값을 변경하세요.
+
+  const svg = d3.select(selector)
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+  const x = d3.scaleLinear()
+      .domain([0, maxValue])
+      .range([0, width]);
+
+  // 배경 구간을 5단계로 나눕니다.
+  const step = maxValue / 5;
+  const ranges = Array.from({length: 5}, (_, i) => i * step);
+
+  // 배경 구간
+  svg.append('g')
+      .attr('class', 'chart')
+      .selectAll('rect.range')
+      .data(ranges.map((d, i) => [d, d + step]))
+      .enter().append('rect')
+      .attr('class', 'range')
+      .attr('x', d => x(d[0]))
+      .attr('width', d => x(d[1]) - x(d[0]))
+      .attr('height', height)
+      .style('fill', (d, i) => d3.interpolateBlues((i + 1) / 5));
+
+  // 빨간색 선
+  svg.append('g')
+      .selectAll('line.marker')
+      .data([value]) // 이 부분을 수정해서 'value' 값을 사용하게끔 변경했습니다.
+      .enter().append('line')
+      .attr('class', 'marker')
+      .attr('x1', x)
+      .attr('x2', x)
+      .attr('y1', 0)
+      .attr('y2', height)
+      .style('stroke', '#f00')
+      .style('stroke-width', '3px');
+
+  // 제목 및 설명 등 원하는 내용을 추가할 수 있습니다.
+}
+
+function checkTemperature(temp, sal, ph, oxg, cod, spm) {
+  var warningMessage = '';
+  if (temp >= 25) {
+      warningMessage += '수온이 25 이상입니다!\n ';
+  } else if (temp <= 5) {
+      warningMessage += '수온이 5 이하입니다!\n ';
+  }
+  if (sal >= 35) {
+      warningMessage += '염도가 평균보다 높습니다.\n ';
+  } else if (sal <= 30) {
+      warningMessage += '염도가 평균보다 낮습니다.\n ';
+  }
+  if (ph >= 8.5) {
+      warningMessage += '산성도가 평균보다 높습니다.\n ';
+  } else if (ph <= 7.5) {
+      warningMessage += '산성도가 평균보다 낮습니다.\n ';
+  }
+  if (oxg <= 5) {
+      warningMessage += '용존 산소량이 낮습니다.\n ';
+  }
+  if (cod >= 10) {
+      warningMessage += '화학적 산소 요구량이 높습니다.\n ';
+  }
+  if (spm >= 15) {
+      warningMessage += '입자 물질의 농도가 높습니다.\n ';
+  }
+
+  var warningMessageElement = document.getElementById('warning_message');
+  warningMessageElement.innerText = warningMessage;
+  
+  // 스타일 변경
+  warningMessageElement.style.color = 'white';
+}
+
+
+
+function drawBarChart(temp) {
+  var chart = echarts.init(document.getElementById('bar_chart'));
+  var option = {
+      yAxis: { // Y축 설정을 X축으로 바꾸고, category 타입으로 설정
+          type: 'category',
+          data: ['수온']
+      },
+      xAxis: { // X축 설정을 Y축으로 바꾸고, value 타입으로 설정
+          type: 'value',
+          max: 35 // X축의 최대 값 설정
+      },
+      series: [{
+          data: [temp],
+          type: 'bar',
+          markLine: {
+              data: [{ xAxis: 25, name: '경고 수준' }], // 경고 수준을 X축으로 이동
+              lineStyle: {
+                  color: 'red'
+              }
+          }
+      }]
+  };
+  chart.setOption(option);
+}
+
+
 let myPieChart; // 전역 변수로 Pie Chart 인스턴스 선언
 
 function drawPieChart(data) {
@@ -148,9 +260,6 @@ function drawPieChart(data) {
     data: chartData,
   });
 }
-
-autoFocus();
-
 
 
 

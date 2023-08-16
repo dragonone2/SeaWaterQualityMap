@@ -22,16 +22,15 @@
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
     />
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-/>
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
 
-        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    
+
     <script
       src="assets/js/core/jquery.3.2.1.min.js"
       type="text/javascript"
@@ -42,66 +41,36 @@
       type="text/javascript"
     ></script>
     <script src="assets/js/plugins/bootstrap-switch.js"></script>
-    
-    
+
     <script src="assets/js/plugins/bootstrap-notify.js"></script>
     <script
       src="assets/js/light-bootstrap-dashboard.js?v=2.0.0 "
       type="text/javascript"
     ></script>
+
     
-    
-     <link rel="stylesheet" href="styles.css">
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
-
-
-    
+    <script src="https://www.koolchart.com/demo/LicenseKey/codepen/KoolChartLicense.js"></script>
+    <script src="https://www.koolchart.com/demo/KoolChart/JS/KoolChart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://www.koolchart.com/demo/KoolChart/Assets/Css/KoolChart.css"
+    />
+    <link rel="stylesheet" href="./styles.css">
+     <link rel="stylesheet" href="./map-styles.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
   </head>
   <body class="sidebar-bg">
     <div id="content">
-      
       <div id="dashboard">
-
         <div class="col-md-8-row">
           <div>
             <div>
               <div id="chart-container">
-                <canvas id="chart-do"></canvas>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-
-
-        <div class="col-md-8-row">
-          <div>
-            <div>
-              <div id="chart-container">
-                <h1 class="time" id="clock"></h1>
-                <div id="gaugeChart" style="width: 400px; height: 200px;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-md-9">
-          <div>
-            <div>
-            </div>
-            <div id="data" style="display: none"></div>
-    <canvas id="myPieChart"></canvas> <!-- Pie Chart를 그릴 Canvas 추가 -->
-          </div>
-        </div>
-
-        <div class="col-md-8-row">
-          <div>
-            <div>
-              <div id="chart-container">
-                <canvas id="chart-ph"></canvas>
+                <p id="warning_message"></p>
               </div>
             </div>
           </div>
@@ -109,9 +78,14 @@
 
         <div class="col-md-9">
           <div>
+            <div class="button-container">
+                <button id="button1" class="center-button" onclick="location.href='home.html'">dashboard</button>
+                <button id="button2" class="center-button" onclick="location.href='historical-data.html'">historical data</button>
+                <button id="button3" class="center-button" onclick="location.href='map.html'">map</button>
+            </div>
             <div>
-              
               <div>
+                <h1 class="time" id="clock"></h1>
                 <div id="map"
                    style="width: 500px; height: 350px; position: relative; z-index: 1;"
               ></div> 
@@ -122,32 +96,57 @@
                 <p id="data-value">레벨: </p>
               </div>
               </div>
-              
             </div>
           </div>
         </div>
+
+        <div class="col-md-9">
+          <div>
+            <div></div>
+            <div id="data" style="display: none"></div>
+            <canvas id="myPieChart"></canvas>
+            <!-- Pie Chart를 그릴 Canvas 추가 -->
+          </div>
+        </div>
+
         <div class="col-md-8-row">
           <div>
             <div>
+              <div id="chart-container"></div>
             </div>
+          </div>
+        </div>
+
+        <div class="col-md-8-row">
+          <div>
+            <div>
+              <div id="chart-container">
+                <h1 class="time" id="clock"></h1>
+                <div id="bullet-chart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-8-row">
+          <div>
+            <div></div>
             <div id="chart-container">
-              <canvas id="chart-tn"></canvas>
+              <pre id="data"></pre>
+              <div id="bar_chart" style="width: 400px; height: 200px"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
   </body>
-  
+
   <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap"
-  async
-  defer
-></script>
-<script>
-  
-</script>
-<script src="./assets/js/Dashboard.js"></script>
-<!-- <script src="./assets/js/dashBoardGrid.js" async defer></script> -->
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap"
+    async
+    defer
+  ></script>
+  <script></script>
+  <script src="./test.js"></script>
+  <!-- <script src="./assets/js/dashBoardGrid.js" async defer></script> -->
 </html>

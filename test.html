@@ -56,7 +56,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
-
+    <script src="https://www.koolchart.com/demo/LicenseKey/codepen/KoolChartLicense.js"></script>
+    <script src="https://www.koolchart.com/demo/KoolChart/JS/KoolChart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://www.koolchart.com/demo/KoolChart/Assets/Css/KoolChart.css"
+    />
+    <script src="https://d3js.org/d3.v6.min.js"></script>
 
     
   </head>
@@ -69,7 +75,8 @@
           <div>
             <div>
               <div id="chart-container">
-                <canvas id="chart-do"></canvas>
+                
+    <p id="warning_message"></p>
               </div>
             </div>
             
@@ -82,7 +89,7 @@
             <div>
               <div id="chart-container">
                 <h1 class="time" id="clock"></h1>
-                <div id="gaugeChart" style="width: 400px; height: 200px;"></div>
+                <div id="bullet-chart"></div>
               </div>
             </div>
           </div>
@@ -101,7 +108,8 @@
           <div>
             <div>
               <div id="chart-container">
-                <canvas id="chart-ph"></canvas>
+                
+
               </div>
             </div>
           </div>
@@ -131,7 +139,8 @@
             <div>
             </div>
             <div id="chart-container">
-              <canvas id="chart-tn"></canvas>
+              <pre id="data"></pre>
+    <div id="bar_chart" style="width: 400px; height: 200px;"></div>
             </div>
           </div>
         </div>

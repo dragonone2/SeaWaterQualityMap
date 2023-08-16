@@ -1,7 +1,18 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
+  authDomain: "model-craft-391306.firebaseapp.com",
+  databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
+  projectId: "model-craft-391306",
+  storageBucket: "model-craft-391306.appspot.com",
+  messagingSenderId: "54080375203",
+  appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
+  measurementId: "G-GN648GFCTK",
+};
+
+firebase.initializeApp(firebaseConfig);
 
 function getBounds(coordinate, zoomLevel) {
   const delta = 5 / Math.pow(2, zoomLevel);
-  
   return {
     north: coordinate.lat + delta,
     south: coordinate.lat - delta,
@@ -10,195 +21,15 @@ function getBounds(coordinate, zoomLevel) {
   };
 }
 
-let rectangles = [];
+const rectangles = [];
 
 function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
-    center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
+    center: { lat: 35.9078, lng: 127.7669 },
     mapTypeId: "terrain",
-    styles: [
-      {
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#f5f5f5"
-          }
-        ]
-      },
-      {
-        "elementType": "labels.icon",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#616161"
-          }
-        ]
-      },
-      {
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#f5f5f5"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative.land_parcel",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#bdbdbd"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#eeeeee"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#757575"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#e5e5e5"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#9e9e9e"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#ffffff"
-          }
-        ]
-      },
-      {
-        "featureType": "road.arterial",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#757575"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#dadada"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#616161"
-          }
-        ]
-      },
-      {
-        "featureType": "road.local",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#9e9e9e"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.line",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#e5e5e5"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#eeeeee"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#c9c9c9"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#9e9e9e"
-          }
-        ]
-      }
-    ]
-
+    disableDefaultUI: true,
   });
-
-  function readCSVFile(fileURL, callback) {
-    fetch(fileURL)
-      .then((response) => response.text())
-      .then((data) => {
-        const rows = data.split("\n").slice(1);
-        const coordinates = rows.map((row) => {
-          const [lat, lng, value] = row.split(",");
-          return {
-            lat: parseFloat(lat),
-            lng: parseFloat(lng),
-            value: parseInt(value),
-          };
-        });
-        callback(coordinates);
-      })
-      .catch((error) => console.log("Error reading CSV file:", error));
-  }
-
-  const csvFilePath = "./kr_sea_data.csv";
 
   function getColorByValue(value) {
     switch (value) {
@@ -217,27 +48,84 @@ function initMap() {
     }
   }
 
-  readCSVFile(csvFilePath, (coordinates) => {
+  fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
       const rectangle = new google.maps.Rectangle({
         strokeColor: getColorByValue(coordinate.value),
         strokeOpacity: 0,
         strokeWeight: 1,
         fillColor: getColorByValue(coordinate.value),
-        fillOpacity: 0.9,
+        fillOpacity: 0.6,
         map,
         zIndex: coordinate.value,
         bounds: getBounds(coordinate, map.getZoom()),
       });
 
-      rectangles.push({rectangle: rectangle, coordinate: coordinate});
-    });
+      rectangles.push({ rectangle: rectangle, coordinate: coordinate });
 
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-      const zoomLevel = map.getZoom();
-      rectangles.forEach(rect => {
-        rect.rectangle.setBounds(getBounds(rect.coordinate, zoomLevel));
+      google.maps.event.addListener(map, "zoom_changed", function () {
+        const zoomLevel = map.getZoom();
+        rectangles.forEach((rect) => {
+          rect.rectangle.setBounds(getBounds(rect.coordinate, zoomLevel));
+        });
       });
+
+      const searchInput = document.getElementById("search-input");
+    const searchButton = document.getElementById("search-button");
+
+    // 검색 버튼 클릭 이벤트 처리
+    searchButton.addEventListener("click", () => {
+      const searchQuery = searchInput.value.toLowerCase();
+      const foundCoordinate = rectangles.find((rect) => {
+        return rect.coordinate.area.toLowerCase().includes(searchQuery);
+      });
+
+      if (foundCoordinate) {
+        const zoomLevel = 1;
+        const bounds = getBounds(foundCoordinate.coordinate, zoomLevel);
+        map.fitBounds(new google.maps.LatLngBounds(bounds));
+      } else {
+        console.log("검색 결과 없음");
+      }
+    });
     });
   });
+}
+
+function fetchAllCoordinates(callback) {
+  const promises = [];
+
+  for (let i = 1; i <= 50; i++) {
+    const id = "A-" + String(i).padStart(2, "0");
+    const dbRef = firebase.database().ref(id);
+    promises.push(
+      dbRef.once("value").then((snapshot) => {
+        const coordinates = [];
+        snapshot.forEach((childSnapshot) => {
+          const data = childSnapshot.val();
+          const coordinate = {
+            lat: parseFloat(data.latitude),
+            lng: parseFloat(data.longitude),
+            value: data.Grade,
+            area: data.area
+          };
+
+          if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
+            coordinates.push(coordinate);
+          }
+        });
+
+        return coordinates;
+      })
+    );
+  }
+
+  Promise.all(promises)
+    .then((results) => {
+      const allCoordinates = results.flat();
+      callback(allCoordinates);
+    })
+    .catch((error) => {
+      console.log("데이터 읽기 실패:", error);
+    });
 }
