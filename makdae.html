@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수온 데이터 표시</title>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.2.1/echarts.min.js"></script>
+</head>
+
+<body>
+    <input type="text" id="idInput" placeholder="ID 입력">
+    <button onclick="fetchDataById()">데이터 가져오기</button>
+    <pre id="data"></pre>
+    <div id="bar_chart" style="width: 400px; height: 200px;"></div>
+
+    <script>
+       var firebaseConfig = {
+            apiKey: "AIzaSyA9OJf8_t3cQ6cnX-GCEZX5kpDxcq3us2A",
+            authDomain: "model-craft-391306.firebaseapp.com",
+            databaseURL: "https://model-craft-391306-default-rtdb.firebaseio.com",
+            projectId: "model-craft-391306",
+            storageBucket: "model-craft-391306.appspot.com",
+            messagingSenderId: "54080375203",
+            appId: "1:54080375203:web:2c7553ce4a44a6e96cb216",
+            measurementId: "G-GN648GFCTK",
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+
+        function fetchDataById() {
+            var inputId = document.getElementById('idInput').value;
+            var dbRef = firebase.database().ref('A-01/' + inputId);
+            dbRef.once("value").then(function (snapshot) {
+                var data = snapshot.val();
+                if (data) {
+                    var content = JSON.stringify(data, null, 2);
+                    document.getElementById('data').innerText = content;
+                    drawBarChart(data['temperature'], data['grade']);
+                } else {
+                    document.getElementById('data').innerText = '해당 ID의 데이터를 찾을 수 없습니다.';
+                }
+            }).catch(function (error) {
+                console.log("데이터 읽기 실패: ", error);
+            });
+        }
+
+        function drawBarChart(temperature, grade) {
+            var chart = echarts.init(document.getElementById('bar_chart'));
+            var option = {
+                yAxis: { // Y축 설정을 X축으로 바꾸고, category 타입으로 설정
+                    type: 'category',
+                    data: ['수온']
+                },
+                xAxis: { // X축 설정을 Y축으로 바꾸고, value 타입으로 설정
+                    type: 'value',
+                    max: 35 // X축의 최대 값 설정
+                },
+                series: [{
+                    data: [temperature],
+                    type: 'bar',
+                    itemStyle:{ // 아이템 스타일 추가
+                        color: function () { // 색상 조건문
+                            if(grade === 'A') return 'green' // Grade가 A이면 초록색
+                            else if(grade === 'B') return 'yellow' // Grade가 B이면 노란색
+                            else if(grade === 'C') return 'orange' // Grade가 C이면 주황색
+                            else if(grade === 'D') return 'red' // Grade가 D이면 빨간색
+                            else return 'grey' // Grade가 A, B, C, D 이외의 값이면 회색
+                        }
+                    },
+                    markLine: {
+                        data: [{ xAxis: 25, name: '경고 수준' }], // 경고 수준을 X축으로 이동
+                        lineStyle: {
+                            color: 'red'
+                        }
+                    }
+                }]
+            };
+            chart.setOption(option);
+        }
+
+    </script>
+</body>
+
+</html>

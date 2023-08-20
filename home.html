@@ -48,7 +48,6 @@
       type="text/javascript"
     ></script>
 
-    
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
@@ -59,8 +58,8 @@
       rel="stylesheet"
       href="https://www.koolchart.com/demo/KoolChart/Assets/Css/KoolChart.css"
     />
-    <link rel="stylesheet" href="./styles.css">
-     <link rel="stylesheet" href="./map-styles.css">
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./map-styles.css" />
     <script src="https://d3js.org/d3.v6.min.js"></script>
   </head>
   <body class="sidebar-bg">
@@ -70,7 +69,10 @@
           <div>
             <div>
               <div id="chart-container">
-                <p id="warning_message"></p>
+                <div id="temp_chart" style="width: 420px; height: 100px"></div>
+                <div id="spm_chart" style="width: 420px; height: 100px"></div>
+                <div id="ph_chart" style="width: 420px; height: 100px"></div>
+                <div id="oxg_chart" style="width: 420px; height: 100px"></div>
               </div>
             </div>
           </div>
@@ -79,28 +81,52 @@
         <div class="col-md-9">
           <div>
             <div class="button-container">
-                <button id="button1" class="center-button" onclick="location.href='home.html'">dashboard</button>
-                <button id="button2" class="center-button" onclick="location.href='historical-data.html'">historical data</button>
-                <button id="button3" class="center-button" onclick="location.href='map.html'">map</button>
+              <button
+                id="button1"
+                class="center-button"
+                onclick="location.href='home.html'"
+              >
+                dashboard
+              </button>
+              <button
+                id="button2"
+                class="center-button"
+                onclick="location.href='historical-data.html'"
+              >
+                historical data
+              </button>
+              <button
+                id="button3"
+                class="center-button"
+                onclick="location.href='map.html'"
+              >
+                map
+              </button>
             </div>
             <div>
               <div>
                 <h1 class="time" id="clock"></h1>
-                <div id="map"
-                   style="width: 500px; height: 350px; position: relative; z-index: 1;"
-              ></div> 
-              <div id="data-display" style="display: none;">
-                <h4 class="word">선택한 위치 정보</h4>
-                <p id="data-lat">위도: </p>
-                <p id="data-lng">경도: </p>
-                <p id="data-value">레벨: </p>
-              </div>
+                <div
+                  id="map"
+                  style="
+                    width: 800px;
+                    height: 400px;
+                    position: relative;
+                    z-index: 1;
+                  "
+                ></div>
+                <div id="data-display" style="display: none">
+                  <h4 class="word">선택한 위치 정보</h4>
+                  <p id="data-lat">위도:</p>
+                  <p id="data-lng">경도:</p>
+                  <p id="data-value">레벨:</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="col-md-9">
+        <div class="col-md-5">
           <div>
             <div></div>
             <div id="data" style="display: none"></div>
@@ -130,23 +156,21 @@
 
         <div class="col-md-8-row">
           <div>
-            <div></div>
+            
             <div id="chart-container">
-              <pre id="data"></pre>
-              <div id="bar_chart" style="width: 400px; height: 200px"></div>
+              <p id="warning_message"></p>
             </div>
+            
           </div>
         </div>
       </div>
     </div>
   </body>
 
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap"
-    async
-    defer
-  ></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAMkNqy8UIL4xN40FbTVE5zYC0ucq8Mtw&callback=initMap" async
+  defer></script>
+
   <script></script>
-  <script src="./test.js"></script>
+  <script src="./assets/js/Dashboard.js"></script>
   <!-- <script src="./assets/js/dashBoardGrid.js" async defer></script> -->
-</html>
+</html> 

@@ -11,18 +11,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-function autoFocus(data) {
-  if (!data) {
-    return;
-  }
-
-  const content = JSON.stringify(data, null, 2);
-  document.getElementById("data").innerText = content;
-  drawBulletChart(data["value"], '#bullet-chart');
-  drawPieChart(data);
-  drawBarChart(data['temp']);
-  checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
-}
 function fetchDataById() {
   
   
@@ -48,163 +36,56 @@ function fetchDataById() {
     });
 }
 function fetchAllCoordinates(callback) {
-  const promises = [];
+  const coordinates = [];
 
   for (let i = 1; i <= 50; i++) {
     const id = "A-" + String(i).padStart(2, "0");
     const dbRef = firebase.database().ref(id);
-    promises.push(
-      dbRef.once("value").then((snapshot) => {
-        const coordinates = [];
-        snapshot.forEach((childSnapshot) => {
-          const data = childSnapshot.val();
-          const coordinate = {
-            lat: parseFloat(data.latitude),
-            lng: parseFloat(data.longitude),
-            value: data.Grade,
-            cod: data.COD,
-            dip: data.DIP,
-            sd: data.SD,
-            spm: data.SPM,
-            si: data.Si_OH4,
-            tn: data.TN,
-            tp: data.TP,
-            ch: data.chlorophyll,
-            oxg: data.dissolved_oxygen,
-            ph: data.pH,
-            sal: data.salinity,
-            temp: data.temperature,
-          };
+    
+    dbRef.on("value", (snapshot) => {
+      const coordinateList = [];
+      snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+        const coordinate = {
+          lat: parseFloat(data.latitude),
+          lng: parseFloat(data.longitude),
+          value: data.Grade,
+          cod: data.COD,
+          dip: data.DIP,
+          sd: data.SD,
+          spm: data.SPM,
+          si: data.Si_OH4,
+          tn: data.TN,
+          tp: data.TP,
+          ch: data.chlorophyll,
+          oxg: data.dissolved_oxygen,
+          ph: data.pH,
+          sal: data.salinity,
+          temp: data.temperature,
+        };
 
-          if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
-            coordinates.push(coordinate);
-          }
-        });
-
-        return coordinates;
-      })
-    );
-  }
-
-  Promise.all(promises)
-    .then((results) => {
-      const allCoordinates = results.flat();
-      callback(allCoordinates);
-    })
-    .catch((error) => {
-      console.log("데이터 읽기 실패:", error);
+        if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
+          coordinateList.push(coordinate);
+        }
+      });
+      coordinates[i - 1] = coordinateList;
+      if (i === 50) {
+        callback(coordinates.flat());
+      }
     });
+  }
 }
 
+function autoFocus(data) {
+  if (!data) {
+    return;
+  }
 
-function drawBulletChart(value, selector) {
-  const width = 600;
-  const height = 50;
-  
-  const maxValue = 5; // 최대 값 설정이 필요하다면 이 변수값을 변경하세요.
-
-  const svg = d3.select(selector)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
-
-  const x = d3.scaleLinear()
-      .domain([0, maxValue])
-      .range([0, width]);
-
-  // 배경 구간을 5단계로 나눕니다.
-  const step = maxValue / 5;
-  const ranges = Array.from({length: 5}, (_, i) => i * step);
-
-  // 배경 구간
-  svg.append('g')
-      .attr('class', 'chart')
-      .selectAll('rect.range')
-      .data(ranges.map((d, i) => [d, d + step]))
-      .enter().append('rect')
-      .attr('class', 'range')
-      .attr('x', d => x(d[0]))
-      .attr('width', d => x(d[1]) - x(d[0]))
-      .attr('height', height)
-      .style('fill', (d, i) => d3.interpolateBlues((i + 1) / 5));
-
-  // 빨간색 선
-  svg.append('g')
-      .selectAll('line.marker')
-      .data([value]) // 이 부분을 수정해서 'value' 값을 사용하게끔 변경했습니다.
-      .enter().append('line')
-      .attr('class', 'marker')
-      .attr('x1', x)
-      .attr('x2', x)
-      .attr('y1', 0)
-      .attr('y2', height)
-      .style('stroke', '#f00')
-      .style('stroke-width', '3px');
-
-  // 제목 및 설명 등 원하는 내용을 추가할 수 있습니다.
+  const content = JSON.stringify(data, null, 2);
+  document.getElementById("data").innerText = content;
+  drawGaugeChart(data["value"]);
+  drawPieChart(data);
 }
-
-function checkTemperature(temp, sal, ph, oxg, cod, spm) {
-  var warningMessage = '';
-  if (temp >= 25) {
-      warningMessage += '수온이 25 이상입니다!\n ';
-  } else if (temp <= 5) {
-      warningMessage += '수온이 5 이하입니다!\n ';
-  }
-  if (sal >= 35) {
-      warningMessage += '염도가 평균보다 높습니다.\n ';
-  } else if (sal <= 30) {
-      warningMessage += '염도가 평균보다 낮습니다.\n ';
-  }
-  if (ph >= 8.5) {
-      warningMessage += '산성도가 평균보다 높습니다.\n ';
-  } else if (ph <= 7.5) {
-      warningMessage += '산성도가 평균보다 낮습니다.\n ';
-  }
-  if (oxg <= 5) {
-      warningMessage += '용존 산소량이 낮습니다.\n ';
-  }
-  if (cod >= 10) {
-      warningMessage += '화학적 산소 요구량이 높습니다.\n ';
-  }
-  if (spm >= 15) {
-      warningMessage += '입자 물질의 농도가 높습니다.\n ';
-  }
-
-  var warningMessageElement = document.getElementById('warning_message');
-  warningMessageElement.innerText = warningMessage;
-  
-  // 스타일 변경
-  warningMessageElement.style.color = 'white';
-}
-
-
-
-function drawBarChart(temp) {
-  var chart = echarts.init(document.getElementById('bar_chart'));
-  var option = {
-      yAxis: { // Y축 설정을 X축으로 바꾸고, category 타입으로 설정
-          type: 'category',
-          data: ['수온']
-      },
-      xAxis: { // X축 설정을 Y축으로 바꾸고, value 타입으로 설정
-          type: 'value',
-          max: 35 // X축의 최대 값 설정
-      },
-      series: [{
-          data: [temp],
-          type: 'bar',
-          markLine: {
-              data: [{ xAxis: 25, name: '경고 수준' }], // 경고 수준을 X축으로 이동
-              lineStyle: {
-                  color: 'red'
-              }
-          }
-      }]
-  };
-  chart.setOption(option);
-}
-
 
 let myPieChart; // 전역 변수로 Pie Chart 인스턴스 선언
 
@@ -317,10 +198,13 @@ function getBounds(coordinate, zoomLevel) {
 
 const rectangles = [];
 
+let currentCenter = { lat: 35.9078, lng: 127.7669 };
+let currentZoom = 7;
+
 function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 7,
-    center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
+    zoom: currentZoom,
+    center: currentCenter,
     mapTypeId: "terrain", styles: [
       {
         elementType: "geometry",
@@ -484,6 +368,8 @@ function initMap() {
     disableDefaultUI: true,
   });
 
+  
+
   function getColorByValue(value) {
     switch (value) {
       case 1:
@@ -500,6 +386,19 @@ function initMap() {
         return "#eaeaea";
     }
   }
+
+  google.maps.event.addListener(map, "zoom_changed", function () {
+    const zoomLevel = map.getZoom();
+    currentZoom = zoomLevel; // 현재 확대 레벨 저장
+    rectangles.forEach((rect) => {
+      rect.rectangle.setBounds(getBounds(rect.coordinate, zoomLevel));
+    });
+  });
+
+  // 중앙 좌표 변경 이벤트
+  google.maps.event.addListener(map, "center_changed", function () {
+    currentCenter = map.getCenter().toJSON(); // 현재 중앙 좌표 저장
+  });
 
   fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
@@ -518,6 +417,8 @@ function initMap() {
 
       rectangle.addListener("click", () => {
         fetchCoordinateDataByPosition(coordinate, (foundCoordinate) => {
+          console.log("클릭한 좌표:", coordinate);
+          console.log("찾은 좌표 데이터:", foundCoordinate);
           if (foundCoordinate) {
             updateDataDisplay(foundCoordinate);
             autoFocus(foundCoordinate);

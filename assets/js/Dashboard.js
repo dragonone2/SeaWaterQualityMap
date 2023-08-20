@@ -20,7 +20,7 @@ function autoFocus(data) {
   document.getElementById("data").innerText = content;
   drawBulletChart(data["value"], '#bullet-chart');
   drawPieChart(data);
-  drawBarChart(data['temp']);
+  drawBarChart(data["temp"], data["spm"], data["oxg"], data["ph"]);
   checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
 }
 function fetchDataById() {
@@ -47,55 +47,48 @@ function fetchDataById() {
       console.log("데이터 읽기 실패: ", error);
     });
 }
+
+
 function fetchAllCoordinates(callback) {
-  const promises = [];
+  const coordinates = [];
 
   for (let i = 1; i <= 50; i++) {
     const id = "A-" + String(i).padStart(2, "0");
     const dbRef = firebase.database().ref(id);
-    promises.push(
-      dbRef.once("value").then((snapshot) => {
-        const coordinates = [];
-        snapshot.forEach((childSnapshot) => {
-          const data = childSnapshot.val();
-          const coordinate = {
-            lat: parseFloat(data.latitude),
-            lng: parseFloat(data.longitude),
-            value: data.Grade,
-            cod: data.COD,
-            dip: data.DIP,
-            sd: data.SD,
-            spm: data.SPM,
-            si: data.Si_OH4,
-            tn: data.TN,
-            tp: data.TP,
-            ch: data.chlorophyll,
-            oxg: data.dissolved_oxygen,
-            ph: data.pH,
-            sal: data.salinity,
-            temp: data.temperature,
-          };
+    
+    dbRef.on("value", (snapshot) => {
+      const coordinateList = [];
+      snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+        const coordinate = {
+          lat: parseFloat(data.latitude),
+          lng: parseFloat(data.longitude),
+          value: data.Grade,
+          cod: data.COD,
+          dip: data.DIP,
+          sd: data.SD,
+          spm: data.SPM,
+          si: data.Si_OH4,
+          tn: data.TN,
+          tp: data.TP,
+          ch: data.chlorophyll,
+          oxg: data.dissolved_oxygen,
+          ph: data.pH,
+          sal: data.salinity,
+          temp: data.temperature,
+        };
 
-          if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
-            coordinates.push(coordinate);
-          }
-        });
-
-        return coordinates;
-      })
-    );
-  }
-
-  Promise.all(promises)
-    .then((results) => {
-      const allCoordinates = results.flat();
-      callback(allCoordinates);
-    })
-    .catch((error) => {
-      console.log("데이터 읽기 실패:", error);
+        if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
+          coordinateList.push(coordinate);
+        }
+      });
+      coordinates[i - 1] = coordinateList;
+      if (i === 50) {
+        callback(coordinates.flat());
+      }
     });
+  }
 }
-
 
 function drawBulletChart(value, selector) {
   const width = 600;
@@ -180,31 +173,87 @@ function checkTemperature(temp, sal, ph, oxg, cod, spm) {
 
 
 
-function drawBarChart(temp) {
-  var chart = echarts.init(document.getElementById('bar_chart'));
-  var option = {
-      yAxis: { // Y축 설정을 X축으로 바꾸고, category 타입으로 설정
-          type: 'category',
-          data: ['수온']
+function drawBarChart(temp, spm, oxg, ph) {
+  // temp
+  var tempChart = echarts.init(document.getElementById("temp_chart"));
+  var tempOption = {
+    yAxis: {
+      type: "category",
+      data: ["수온"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [temp],
+        type: "bar",
       },
-      xAxis: { // X축 설정을 Y축으로 바꾸고, value 타입으로 설정
-          type: 'value',
-          max: 35 // X축의 최대 값 설정
-      },
-      series: [{
-          data: [temp],
-          type: 'bar',
-          markLine: {
-              data: [{ xAxis: 25, name: '경고 수준' }], // 경고 수준을 X축으로 이동
-              lineStyle: {
-                  color: 'red'
-              }
-          }
-      }]
+    ],
   };
-  chart.setOption(option);
-}
+  tempChart.setOption(tempOption);
 
+  // spm
+  var spmChart = echarts.init(document.getElementById("spm_chart"));
+  var spmOption = {
+    yAxis: {
+      type: "category",
+      data: ["spm"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [spm],
+        type: "bar",
+      },
+    ],
+  };
+  spmChart.setOption(spmOption);
+
+  // oxg
+  var oxgChart = echarts.init(document.getElementById("oxg_chart"));
+  var oxgOption = {
+    yAxis: {
+      type: "category",
+      data: ["oxg"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [oxg],
+        type: "bar",
+      },
+    ],
+  };
+  oxgChart.setOption(oxgOption);
+
+  // ph
+  var phChart = echarts.init(document.getElementById("ph_chart"));
+  var phOption = {
+    yAxis: {
+      type: "category",
+      data: ["ph"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [ph],
+        type: "bar",
+      },
+    ],
+  };
+  phChart.setOption(phOption);
+}
 
 let myPieChart; // 전역 변수로 Pie Chart 인스턴스 선언
 

@@ -1,60 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>The Blue Ocean</title>
-    <meta
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
-      name="viewport"
-    />
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-   
-    
-    <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-/>
-     <link rel="stylesheet" href="styles.css">
-     <link rel="stylesheet" href="./map-styles.css">
-    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-database.js"></script>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnTmPO_EGADoS4KeKlSprhO9sRMsSeLkc&callback=initMap"
-      async
-      defer
-    ></script>
-    <script src="./assets/js/map.js" ></script>
-  </head>
 
-  <body class="sidebar-bg">
-      <div id="content">
-        <div class="button-container">
-          </div>
-        <div
-          id="map"
-          style="
-            position: relative;
-            width: 2200px;
-            height: 1200px;
-            left: 0px;
-            top: 0px;
-          "
-        ></div>
-        <div id="search-container">
-          <input id="search-input" type="text" placeholder="지역명 검색">
-          <button id="search-button">검색</button>
-        </div>
-        </div>
-      
-    
-  </body>
+<head>
+  <!-- 文書の文字エンコーディングとブラウザの互換性設定 -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <!-- 文書のタイトル -->
+  <title>The Blue Ocean</title>
+  <!-- ビューポート設定 -->
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+    name="viewport" />
+  <!-- 地図スタイルシートのリンク -->
+  <link rel="stylesheet" href="./map.css">
+  <!-- Firebaseライブラリのスクリプトのリンク -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-database.js"></script>
+  <!-- deck.glのスクリプト -->
+  <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
 
-  <!--   Core JS Files   -->
+</head>
 
+<body class="sidebar-bg">
+  <!-- 本文の内容を格納するdiv要素 -->
+  <div id="content">
+    <!-- ボタンコンテナ -->
+    <div class="button-container">
+      <!-- ここにボタンや関連する内容が配置されることがあります -->
+    </div>
+    <!-- 地図を表示するdiv要素 -->
+    <div id="map"></div>
+    <!-- 検索入力とボタンを含む検索コンテナ -->
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="地域名を入力（例：황해、서해、동해、남해）">
+      <button id="search-button">検索</button>
+      <div id="message"></div>
+    </div>
+    <button id="toggle-layer">GeoJsonLayerの切り替え</button>
 
-
-  <!-- Control Center for Light Bootstrap Dashboard: scripts for the example pages etc -->
+  </div>
+  </div>
+</body>
+<!-- カスタムマップのスクリプトのリンク -->
+<script src="home.js">document.getElementById("toggleLayer").addEventListener("click", toggleGeoJsonLayer);
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAMkNqy8UIL4xN40FbTVE5zYC0ucq8Mtw&callback=initMap" async
+  defer></script>
 
 </html>
