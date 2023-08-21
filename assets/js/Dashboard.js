@@ -20,7 +20,8 @@ function autoFocus(data) {
   document.getElementById("data").innerText = content;
   drawBulletChart(data["value"], '#bullet-chart');
   drawPieChart(data);
-  drawBarChart(data['temp']);
+  drawLineChart(data);
+  drawBarChart(data["temp"], data["spm"], data["oxg"], data["ph"]);
   checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
 }
 function fetchDataById() {
@@ -47,55 +48,51 @@ function fetchDataById() {
       console.log("데이터 읽기 실패: ", error);
     });
 }
+
+
 function fetchAllCoordinates(callback) {
-  const promises = [];
+  const coordinates = [];
 
   for (let i = 1; i <= 50; i++) {
     const id = "A-" + String(i).padStart(2, "0");
     const dbRef = firebase.database().ref(id);
-    promises.push(
-      dbRef.once("value").then((snapshot) => {
-        const coordinates = [];
-        snapshot.forEach((childSnapshot) => {
-          const data = childSnapshot.val();
-          const coordinate = {
-            lat: parseFloat(data.latitude),
-            lng: parseFloat(data.longitude),
-            value: data.Grade,
-            cod: data.COD,
-            dip: data.DIP,
-            sd: data.SD,
-            spm: data.SPM,
-            si: data.Si_OH4,
-            tn: data.TN,
-            tp: data.TP,
-            ch: data.chlorophyll,
-            oxg: data.dissolved_oxygen,
-            ph: data.pH,
-            sal: data.salinity,
-            temp: data.temperature,
-          };
+    const tableId = id
+    dbRef.on("value", (snapshot) => {
+      const coordinateList = [];
+      snapshot.forEach((childSnapshot) => {
+        const moveKey = childSnapshot.key; // move01, move02, ...
+        const data = childSnapshot.val();
+        const coordinate = {
+          tableId,
+          moveKey, // move 키 추가
+          lat: parseFloat(data.latitude),
+          lng: parseFloat(data.longitude),
+          value: data.Grade,
+          cod: data.COD,
+          dip: data.DIP,
+          sd: data.SD,
+          spm: data.SPM,
+          si: data.Si_OH4,
+          tn: data.TN,
+          tp: data.TP,
+          ch: data.chlorophyll,
+          oxg: data.dissolved_oxygen,
+          ph: data.pH,
+          sal: data.salinity,
+          temp: data.temperature,
+        };
 
-          if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
-            coordinates.push(coordinate);
-          }
-        });
-
-        return coordinates;
-      })
-    );
-  }
-
-  Promise.all(promises)
-    .then((results) => {
-      const allCoordinates = results.flat();
-      callback(allCoordinates);
-    })
-    .catch((error) => {
-      console.log("데이터 읽기 실패:", error);
+        if (!isNaN(coordinate.lat) && !isNaN(coordinate.lng)) {
+          coordinateList.push(coordinate);
+        }
+      });
+      coordinates[i - 1] = coordinateList;
+      if (i === 50) {
+        callback(coordinates.flat());
+      }
     });
+  }
 }
-
 
 function drawBulletChart(value, selector) {
   const width = 600;
@@ -180,31 +177,87 @@ function checkTemperature(temp, sal, ph, oxg, cod, spm) {
 
 
 
-function drawBarChart(temp) {
-  var chart = echarts.init(document.getElementById('bar_chart'));
-  var option = {
-      yAxis: { // Y축 설정을 X축으로 바꾸고, category 타입으로 설정
-          type: 'category',
-          data: ['수온']
+function drawBarChart(temp, spm, oxg, ph) {
+  // temp
+  var tempChart = echarts.init(document.getElementById("temp_chart"));
+  var tempOption = {
+    yAxis: {
+      type: "category",
+      data: ["수온"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [temp],
+        type: "bar",
       },
-      xAxis: { // X축 설정을 Y축으로 바꾸고, value 타입으로 설정
-          type: 'value',
-          max: 35 // X축의 최대 값 설정
-      },
-      series: [{
-          data: [temp],
-          type: 'bar',
-          markLine: {
-              data: [{ xAxis: 25, name: '경고 수준' }], // 경고 수준을 X축으로 이동
-              lineStyle: {
-                  color: 'red'
-              }
-          }
-      }]
+    ],
   };
-  chart.setOption(option);
-}
+  tempChart.setOption(tempOption);
 
+  // spm
+  var spmChart = echarts.init(document.getElementById("spm_chart"));
+  var spmOption = {
+    yAxis: {
+      type: "category",
+      data: ["spm"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [spm],
+        type: "bar",
+      },
+    ],
+  };
+  spmChart.setOption(spmOption);
+
+  // oxg
+  var oxgChart = echarts.init(document.getElementById("oxg_chart"));
+  var oxgOption = {
+    yAxis: {
+      type: "category",
+      data: ["oxg"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [oxg],
+        type: "bar",
+      },
+    ],
+  };
+  oxgChart.setOption(oxgOption);
+
+  // ph
+  var phChart = echarts.init(document.getElementById("ph_chart"));
+  var phOption = {
+    yAxis: {
+      type: "category",
+      data: ["ph"],
+    },
+    xAxis: {
+      type: "value",
+      max: 35,
+    },
+    series: [
+      {
+        data: [ph],
+        type: "bar",
+      },
+    ],
+  };
+  phChart.setOption(phOption);
+}
 
 let myPieChart; // 전역 변수로 Pie Chart 인스턴스 선언
 
@@ -234,9 +287,12 @@ function drawPieChart(data) {
     }
   });
 
-  // 필터링된 데이터를 기반으로 라벨 및 데이터 배열 생성
-  var labels = Object.keys(filteredData);
-  var values = Object.values(filteredData);
+  // 필터링된 데이터를 기반으로 정렬된 라벨 및 데이터 배열 생성
+  var entries = Object.entries(filteredData);
+  entries.sort(([_, aValue], [__, bValue]) => bValue - aValue);
+
+  var labels = entries.map(([key, _]) => key);
+  var values = entries.map(([_, value]) => value);
 
   var chartData = {
     labels: labels,
@@ -244,11 +300,20 @@ function drawPieChart(data) {
       {
         data: values,
         backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#FF9F40",
+          "#FFA07A", // 연한 살구색
+          "#87CEEB", // 스카이 블루
+          "#FFDAB9", // 피치 퍼프
+          "#F0E68C", // 카키색
+          "#B0E0E6", // 파우더 블루
+          "#A9A9A9", // 다크 그레이
+          "#ADD8E6", // 라이트 블루
+          "#E0FFFF", // 라이트 시안
+          "#90EE90", // 라이트 그린
+          "#D3D3D3", // 라이트 그레이
+          "#FFC0CB", // 핑크
+          "#BDB76B", // 다크 카키색
+          "#7FFFD4", // 아쿠아마린
+          "#FFE4C4", // 비스크
         ],
       },
     ],
@@ -302,7 +367,64 @@ function drawGaugeChart(value) {
   };
   chart.setOption(option);
 }
+function drawLineChart(coordinate) {
+  if (!coordinate) {
+    console.error('Data is not defined');
+    return;
+  }
 
+  const currentTableId = coordinate.tableId;
+  const currentMoveKey = coordinate.moveKey;
+  const currentMoveIndex = parseInt(currentMoveKey.replace('move', ''), 10);
+
+  // 현재 테이블 ID와 일치하는 데이터를 찾아 그립니다.
+  fetchAllCoordinates((allCoordinates) => {
+    const relatedCoordinates = allCoordinates.filter(c => c.tableId === currentTableId); // currentTableId와 일치하는 데이터 필터링
+    const historicalGrades = relatedCoordinates
+      .filter((c) => {
+        const moveIndex = parseInt(c.moveKey.replace('move', ''), 10);
+        return moveIndex < currentMoveIndex; // currentMoveKey보다 작은 MoveKey를 가진 데이터만 필터링
+      })
+      .map(c => c.value);
+
+    // 현재 Grade값을 포함
+    historicalGrades.push(coordinate.value);
+
+    renderLineChart(historicalGrades);
+  });
+}
+
+function renderLineChart(historicalGrades) {
+  google.charts.load('current', { packages: ['corechart', 'line'] });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    const data = new google.visualization.DataTable();
+    data.addColumn('number', 'Move');
+    data.addColumn('number', 'Grade');
+
+    for (let i = 0; i < historicalGrades.length; i++) {
+      data.addRow([i + 1, historicalGrades[i]]);
+    }
+
+    const options = {
+      hAxis: {
+        title: 'Move',
+        minValue: 1,
+        maxValue: 5
+      },
+      vAxis: {
+        title: 'Grade',
+        minValue: 1,
+        maxValue: 5
+      },
+      legend: 'none'
+    };
+
+    const chart = new google.visualization.LineChart(document.getElementById("line_chart"));
+    chart.draw(data, options);
+  }
+}
 
 
 function getBounds(coordinate, zoomLevel) {
@@ -501,6 +623,10 @@ function initMap() {
     }
   }
 
+  google.maps.event.addListener(map, "center_changed", function () {
+    currentCenter = map.getCenter().toJSON(); // 현재 중앙 좌표 저장
+  });
+
   fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
       const rectangle = new google.maps.Rectangle({
@@ -518,6 +644,8 @@ function initMap() {
 
       rectangle.addListener("click", () => {
         fetchCoordinateDataByPosition(coordinate, (foundCoordinate) => {
+          console.log("클릭한 좌표:", coordinate.lat, coordinate.lng);
+            console.log("찾은 좌표 데이터:", foundCoordinate);
           if (foundCoordinate) {
             updateDataDisplay(foundCoordinate);
             autoFocus(foundCoordinate);
