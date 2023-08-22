@@ -60,7 +60,12 @@
   <link rel="stylesheet" href="https://www.koolchart.com/demo/KoolChart/Assets/Css/KoolChart.css" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAMkNqy8UIL4xN40FbTVE5zYC0ucq8Mtw&callback=initMap"
     async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>
+  <head>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  
 </head>
 
 <body class="">
@@ -73,23 +78,25 @@
     <!-- End Navbar -->
     <div class="content">
       <div class="row">
-        <div class="col-lg-2">
+        <div class="col-lg-3">
           <div class="card card-chart">
             <div class="card-header">
               <h5 class="card-category">Completed Tasks</h5>
               
             </div>
             <div class="card-body">
-              <div class="chart-area">
-                <!-- <canvas id="myPieChart"></canvas> -->
-              </div>
+              
+              <canvas id="myPieChart" style="display: block; width: 300px; height: 200px"></canvas>
+
+              
             </div>
           </div>
         </div>
+        
         <div class="col-lg-8">
           <div id="data" style="display: none"></div>
           <div class="card card-chart">
-            <div id="map" style="width: 1100px; height: 358px; position: relative; z-index: 1;"></div>
+            <div id="map" style="width: 700px; height: 358px; position: relative; z-index: 1;"></div>
             <div id="data-display" style="display: none;">
               <h4 class="word">선택한 위치 정보</h4>
               <p id="data-lat">위도: </p>
@@ -98,8 +105,7 @@
             </div>
           </div>
         </div>
-        
-        <div class="col-lg-3">
+        <div class="col-lg-2">
           <div class="card card-chart">
             <div class="card-header">
               <h5 class="card-category">Completed Tasks</h5>
@@ -107,27 +113,15 @@
             </div>
             <div class="card-body">
               <div class="chart-area">
-                <canvas id="myPieChart"></canvas>
+                <div id="spm_temp_chart"></div>
               </div>
             </div>
           </div>
         </div>
+        
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-4">
-        <div class="card card-chart">
-          <div class="card-header">
-            <h5 class="card-category">Total Shipments</h5>
-           
-          </div>
-          <div class="card-body">
-            <div class="chart-area">
-              <div id="line_chart"></div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="col-lg-4">
         <div class="card card-chart">
           <div class="card-body-1">
@@ -140,6 +134,20 @@
           </div>
         </div>
       </div>
+      <div class="col-lg-4">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Total Shipments</h5>
+           
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <div id="historical_grades_chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div class="col-lg-4">
         <div class="card card-chart">
           <div class="card-header">
@@ -532,7 +540,7 @@
   <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/black-dashboard.min.js?v=1.0.0"></script>
   <!-- Black Dashboard DEMO methods, don't include it in your project! -->
-  <script src="../assets/js/Dashboard.js"></script>
+  <script src="../test.js"></script>
   <script src="../assets/demo/demo.js"></script>
 
   <script>

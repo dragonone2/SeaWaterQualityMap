@@ -20,10 +20,13 @@ function autoFocus(data) {
   document.getElementById("data").innerText = content;
   drawBulletChart(data["value"], '#bullet-chart');
   drawPieChart(data);
-  drawLineChart(data);
+  drawSpmTempChart(data);
+  drawHistoricalGradesChart(data);
   drawBarChart(data["temp"], data["spm"], data["oxg"], data["ph"]);
   checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
 }
+
+
 function fetchDataById() {
   
   
@@ -93,6 +96,13 @@ function fetchAllCoordinates(callback) {
     });
   }
 }
+
+
+
+
+
+
+
 
 function drawBulletChart(value, selector) {
   const width = 600;
@@ -323,6 +333,11 @@ function drawPieChart(data) {
   myPieChart = new Chart(ctx, {
     type: "pie",
     data: chartData,
+    options: {
+      responsive: true, // 창 크기가 변경될 때 차트 크기를 동적으로 조절합니다.
+      maintainAspectRatio: false, // 원래 비율 대신 지정한 크기에 맞게 차트를 그립니다.
+      // (그 외의 옵션들, e.g., title, tooltips, legend 등이 필요하다면 여기 작성)
+    },
   });
 }
 
@@ -367,7 +382,7 @@ function drawGaugeChart(value) {
   };
   chart.setOption(option);
 }
-function drawLineChart(coordinate) {
+function drawHistoricalGradesChart(coordinate) {
   if (!coordinate) {
     console.error('Data is not defined');
     return;
@@ -390,41 +405,179 @@ function drawLineChart(coordinate) {
     // 현재 Grade값을 포함
     historicalGrades.push(coordinate.value);
 
-    renderLineChart(historicalGrades);
+    renderHistoricalGradesChart(historicalGrades);
   });
 }
 
-function renderLineChart(historicalGrades) {
+function renderHistoricalGradesChart(historicalGrades) {
   google.charts.load('current', { packages: ['corechart', 'line'] });
-  google.charts.setOnLoadCallback(drawChart);
+  google.charts.setOnLoadCallback(drawGradesChart);
 
-  function drawChart() {
+  function drawGradesChart() {
     const data = new google.visualization.DataTable();
     data.addColumn('number', 'Move');
     data.addColumn('number', 'Grade');
 
+    let maxMove = 0;
     for (let i = 0; i < historicalGrades.length; i++) {
       data.addRow([i + 1, historicalGrades[i]]);
+      maxMove = Math.max(maxMove, i + 1);
+    }
+    
+    const options = {
+      hAxis: {
+        title: 'Move',
+        minValue: 1,
+        maxValue: maxMove,
+        textStyle: {
+          fontName: 'Roboto',
+          fontSize: 12,
+          color: '#fff',
+        },
+        titleTextStyle: {
+          fontName: 'Roboto',
+          bold: true,
+          fontSize: 14,
+          color: '#fff',
+        },
+      },
+      vAxis: {
+        title: 'Grade',
+        minValue: 1,
+        maxValue: 5,
+        textStyle: {
+          fontName: 'Roboto',
+          fontSize: 12,
+          color: '#fff',
+        },
+        titleTextStyle: {
+          fontName: 'Roboto',
+          bold: true,
+          fontSize: 14,
+          color: '#fff',
+        },
+      },
+      legend: 'none',
+      chartArea: {
+        backgroundColor: 'transparent',
+        left: 50,
+        top: 30,
+        right: 30,
+        bottom: 30,
+      },
+      backgroundColor: 'transparent',
+      lineWidth: 3,
+      colors: ['#6EB5FF'],
+      pointSize: 6,
+      curveType: 'function',
+    };
+
+    const chart = new google.visualization.LineChart(document.getElementById('historical_grades_chart'));
+    chart.draw(data, options);
+  }
+}
+
+function drawSpmTempChart(coordinate) {
+  if (!coordinate) {
+    console.error('Data is not defined');
+    return;
+  }
+
+  const currentTableId = coordinate.tableId;
+  const currentMoveKey = coordinate.moveKey;
+  const currentMoveIndex = parseInt(currentMoveKey.replace('move', ''), 10);
+
+  // 현재 테이블 ID와 일치하는 데이터를 찾아 그립니다.
+  fetchAllCoordinates((allCoordinates) => {
+    const relatedCoordinates = allCoordinates.filter(c => c.tableId === currentTableId); // currentTableId와 일치하는 데이터 필터링
+    const historicalData = relatedCoordinates
+      .filter((c) => {
+        const moveIndex = parseInt(c.moveKey.replace('move', ''), 10);
+        return moveIndex < currentMoveIndex; // currentMoveKey보다 작은 MoveKey를 가진 데이터만 필터링
+      });
+
+    const historicalSpm = historicalData.map(c => c.spm);
+    const historicalTemp = historicalData.map(c => c.temp);
+
+    // 현재 SPM값과 Temp값을 포함
+    historicalSpm.push(coordinate.spm);
+    historicalTemp.push(coordinate.temp);
+
+    renderSpmTempChart(historicalSpm, historicalTemp);
+  });
+}
+
+function renderSpmTempChart(historicalSpm, historicalTemp) {
+  google.charts.load('current', { packages: ['corechart', 'line'] });
+  google.charts.setOnLoadCallback(drawSpmTempChart);
+
+  function drawSpmTempChart() {
+    const data = new google.visualization.DataTable();
+    data.addColumn('number', 'Move');
+    data.addColumn('number', 'SPM');
+    data.addColumn('number', 'Temp');
+
+    let maxMove = 0;
+    for (let i = 0; i < historicalSpm.length; i++) {
+      data.addRow([i + 1, historicalSpm[i], historicalTemp[i]]);
+      maxMove = Math.max(maxMove, i + 1);
     }
 
     const options = {
       hAxis: {
         title: 'Move',
         minValue: 1,
-        maxValue: 5
+        maxValue: maxMove,
+        textStyle: {
+          fontName: 'Roboto',
+          fontSize: 12,
+          color: '#fff',
+        },
+        titleTextStyle: {
+          fontName: 'Roboto',
+          bold: true,
+          fontSize: 14,
+          color: '#fff',
+        },
       },
       vAxis: {
-        title: 'Grade',
-        minValue: 1,
-        maxValue: 5
+        title: 'Value',
+        minValue: 0, // You can adjust this based on your data
+        textStyle: {
+          fontName: 'Roboto',
+          fontSize: 12,
+          color: '#fff',
+        },
+        titleTextStyle: {
+          fontName: 'Roboto',
+          bold: true,
+          fontSize: 14,
+          color: '#fff',
+        },
+        
       },
-      legend: 'none'
+      legend: { position: 'bottom' }, // Legend position at the bottom
+      chartArea: {
+        backgroundColor: 'transparent',
+        left: 50,
+        top: 30,
+        right: 30,
+        bottom: 50, // Increased to accommodate the legend
+      },
+      backgroundColor: 'transparent',
+      lineWidth: 3,
+      colors: ['#6EB5FF', '#FA726F'], // Color for SPM and Temp lines
+      pointSize: 6,
+      curveType: 'function',
     };
 
-    const chart = new google.visualization.LineChart(document.getElementById("line_chart"));
+    const chart = new google.visualization.LineChart(document.getElementById('spm_temp_chart'));
     chart.draw(data, options);
   }
 }
+
+
+
 
 
 function getBounds(coordinate, zoomLevel) {
@@ -602,6 +755,7 @@ function initMap() {
           },
         ],
       },
+      
     ],
     disableDefaultUI: true,
   });
@@ -623,9 +777,15 @@ function initMap() {
     }
   }
 
-  google.maps.event.addListener(map, "center_changed", function () {
-    currentCenter = map.getCenter().toJSON(); // 현재 중앙 좌표 저장
-  });
+
+  map.addListener('center_changed', function () {
+    currentCenter = map.getCenter(); // 現在の中心を取得
+});
+
+// 地図のズームが変更されたときのイベントリスナーを追加
+map.addListener('zoom_changed', function () {
+    currentZoom = map.getZoom(); // 現在のズームレベルを取得
+});
 
   fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
@@ -661,6 +821,7 @@ function initMap() {
       rectangles.forEach((rect) => {
         rect.rectangle.setBounds(getBounds(rect.coordinate, zoomLevel));
       });
+      map.setCenter(currentCenter);
     });
   });
 }
@@ -702,20 +863,20 @@ function updateDataDisplay(coordinateData) {
 
   
 }
-function updateClock() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-  const timeString = `${hours}:${minutes}:${seconds}`;
-  document.getElementById("clock").textContent = timeString;
-  setTimeout(updateClock, 1000);
-}
+// function updateClock() {
+//   const now = new Date();
+//   const hours = String(now.getHours()).padStart(2, "0");
+//   const minutes = String(now.getMinutes()).padStart(2, "0");
+//   const seconds = String(now.getSeconds()).padStart(2, "0");
+//   const timeString = `${hours}:${minutes}:${seconds}`;
+//   document.getElementById("clock").textContent = timeString;
+//   setTimeout(updateClock, 1000);
+// }
 window.coordinatesData = null;
 
 function onAllCoordinatesDataFetched(coordinates) {
   window.coordinatesData = coordinates;
-  updateClock();
+  // updateClock();
   autoFocus(); // Pie 차트 관련 함수 호출
   initMap(); // 지도 관련 함수 호출
 }
