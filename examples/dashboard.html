@@ -62,18 +62,35 @@
     async defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>
-  <head>
+  <script src="https://www.gstatic.com/charts/loader.js%22%3E"> </script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
-  </head>
+    
+    <style>
+      .card {
+        background-color: #374357 !important
+      }
+      .button_ocean:before {
+        content: "";
+        display: inline-block;
+        width: 35px;
+        height: 34.255px;
+        background: url(../assets/img/sun.png)no-repeat; 
+        background-size: contain; 
+        vertical-align: middle;
+        margin-right: 10px; 
+      }
+    </style>
   
 </head>
 
-<body class="">
+<body class="wrapper">
   <div class="wrapper">
     <div class="button-container">
-      <button id="button1" class="center-button" onclick="location.href='home.html'">dashboard</button>
-      <button id="button2" class="center-button" onclick="location.href='historical-data.html'">historical data</button>
-      <button id="button3" class="center-button" onclick="location.href='map.html'">map</button>
+      <button id="button1" class="button_ocean" onclick="location.href='home.html'">The Blue Ocean</button>
+      <div class="button-right">
+        <button id="button2" class="button_Dashboard" onclick="location.href='historical-data.html'">Dashboard</button>
+        <button id="button3" class="button_map" onclick="location.href='map.html'">map</button>
+      </div>
     </div>
     <!-- End Navbar -->
     <div class="content">
@@ -96,7 +113,7 @@
         <div class="col-lg-8">
           <div id="data" style="display: none"></div>
           <div class="card card-chart">
-            <div id="map" style="width: 700px; height: 358px; position: relative; z-index: 1;"></div>
+            <div id="map" style="width: 800px; height: 358px; position: relative; z-index: 1;"></div>
             <div id="data-display" style="display: none;">
               <h4 class="word">선택한 위치 정보</h4>
               <p id="data-lat">위도: </p>
@@ -113,7 +130,7 @@
             </div>
             <div class="card-body">
               <div class="chart-area">
-                <div id="spm_temp_chart"></div>
+                <div id="spm_turbidity_chart"></div>
               </div>
             </div>
           </div>
@@ -540,7 +557,8 @@
   <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="../assets/js/black-dashboard.min.js?v=1.0.0"></script>
   <!-- Black Dashboard DEMO methods, don't include it in your project! -->
-  <script src="../test.js"></script>
+  <script src="../assets/js/Dashboard.js"></script>
+  <!-- <script src="../test.js"></script> -->
   <script src="../assets/demo/demo.js"></script>
 
   <script>

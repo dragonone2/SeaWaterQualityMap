@@ -1304,7 +1304,7 @@ pre code {
 
   .col-lg-4 {
     flex: 0 0 33.333333%;
-    max-width: 32.333333%;
+    max-width: 31.333333%;
   }
   .col-lg-4-row {
     flex: 0 0 33.333333%;
@@ -5187,21 +5187,43 @@ input[type="button"].btn-block {
 }
 .button-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* 버튼을 컨테이너 상단에 맞춤 */
-  padding-top: none; /* 상단 여백 설정 */
+  justify-content: space-between; 
+  align-items: flex-start; 
+  padding-top: none; 
+  background-color:#374357 ;
+  padding-top: 0; 
 }
 
-/* 가운데 정렬된 버튼 스타일 */
-.center-button {
-  margin: 0 10px; /* 버튼 사이의 간격 조절 */
+.button_ocean {
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  vertical-align: middle; 
+  padding: 1px;
+  border :none;
+  background-color: #374357;
+  cursor: pointer;
+  color: #FFF;
+  margin-right: auto;
+}
+
+.button-right {
+  display: flex; 
+}
+.button_Dashboard,
+.button_map {
+  margin: 0 10px; 
   padding: 10px 20px;
-  background-color: transparent; /* 배경색 제거 */
-  color: #007bff; /* 텍스트 색상 설정 */
+  background-color: #374357;
+  vertical-align: middle; 
+  background-color: transparent;  
+  color: #fff; 
   border: none;
   cursor: pointer;
-  
+  margin-left: 10px;
 }
+/* 가운데 정렬된 버튼 스타일 */
+
 .card>.list-group:first-child .list-group-item:first-child {
   border-top-left-radius: 0.2857rem;
   border-top-right-radius: 0.2857rem;

@@ -18,18 +18,21 @@ function autoFocus(data) {
 
   const content = JSON.stringify(data, null, 2);
   document.getElementById("data").innerText = content;
-  drawBulletChart(data["value"], '#bullet-chart');
   drawPieChart(data);
-  drawSpmTempChart(data);
+  drawSpmTurbidityChart(data);
   drawHistoricalGradesChart(data);
   drawBarChart(data["temp"], data["spm"], data["oxg"], data["ph"]);
-  checkTemperature(data['temp'], data['sal'], data['ph'], data['oxg'], data['cod'], data['spm']);
+  checkTemperature(
+    data["temp"],
+    data["sal"],
+    data["ph"],
+    data["oxg"],
+    data["cod"],
+    data["spm"]
+  );
 }
 
-
 function fetchDataById() {
-  
-  
   // 해당 ID 값에 대한 데이터를 가져옵니다.
   var dbRef = firebase.database().ref("/" + inputId);
 
@@ -40,8 +43,7 @@ function fetchDataById() {
       if (data) {
         var content = JSON.stringify(data, null, 2);
         document.getElementById("data").innerText = content;
-         autoFocus(); // Pie Chart 그리기 함수 호출
-         
+        autoFocus(); // Pie Chart 그리기 함수 호출
       } else {
         document.getElementById("data").innerText =
           "해당 ID의 데이터를 찾을 수 없습니다.";
@@ -52,14 +54,13 @@ function fetchDataById() {
     });
 }
 
-
 function fetchAllCoordinates(callback) {
   const coordinates = [];
 
   for (let i = 1; i <= 50; i++) {
     const id = "A-" + String(i).padStart(2, "0");
     const dbRef = firebase.database().ref(id);
-    const tableId = id
+    const tableId = id;
     dbRef.on("value", (snapshot) => {
       const coordinateList = [];
       snapshot.forEach((childSnapshot) => {
@@ -89,6 +90,7 @@ function fetchAllCoordinates(callback) {
           coordinateList.push(coordinate);
         }
       });
+
       coordinates[i - 1] = coordinateList;
       if (i === 50) {
         callback(coordinates.flat());
@@ -98,94 +100,39 @@ function fetchAllCoordinates(callback) {
 }
 
 
-
-
-
-
-
-
-function drawBulletChart(value, selector) {
-  const width = 600;
-  const height = 50;
-  
-  const maxValue = 5; // 최대 값 설정이 필요하다면 이 변수값을 변경하세요.
-
-  const svg = d3.select(selector)
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height);
-
-  const x = d3.scaleLinear()
-      .domain([0, maxValue])
-      .range([0, width]);
-
-  // 배경 구간을 5단계로 나눕니다.
-  const step = maxValue / 5;
-  const ranges = Array.from({length: 5}, (_, i) => i * step);
-
-  // 배경 구간
-  svg.append('g')
-      .attr('class', 'chart')
-      .selectAll('rect.range')
-      .data(ranges.map((d, i) => [d, d + step]))
-      .enter().append('rect')
-      .attr('class', 'range')
-      .attr('x', d => x(d[0]))
-      .attr('width', d => x(d[1]) - x(d[0]))
-      .attr('height', height)
-      .style('fill', (d, i) => d3.interpolateBlues((i + 1) / 5));
-
-  // 빨간색 선
-  svg.append('g')
-      .selectAll('line.marker')
-      .data([value]) // 이 부분을 수정해서 'value' 값을 사용하게끔 변경했습니다.
-      .enter().append('line')
-      .attr('class', 'marker')
-      .attr('x1', x)
-      .attr('x2', x)
-      .attr('y1', 0)
-      .attr('y2', height)
-      .style('stroke', '#f00')
-      .style('stroke-width', '3px');
-
-  // 제목 및 설명 등 원하는 내용을 추가할 수 있습니다.
-}
-
 function checkTemperature(temp, sal, ph, oxg, cod, spm) {
-  var warningMessage = '';
+  var warningMessage = "";
   if (temp >= 25) {
-      warningMessage += '수온이 25 이상입니다!\n ';
+    warningMessage += "수온이 25 이상입니다!\n ";
   } else if (temp <= 5) {
-      warningMessage += '수온이 5 이하입니다!\n ';
+    warningMessage += "수온이 5 이하입니다!\n ";
   }
   if (sal >= 35) {
-      warningMessage += '염도가 평균보다 높습니다.\n ';
+    warningMessage += "염도가 평균보다 높습니다.\n ";
   } else if (sal <= 30) {
-      warningMessage += '염도가 평균보다 낮습니다.\n ';
+    warningMessage += "염도가 평균보다 낮습니다.\n ";
   }
   if (ph >= 8.5) {
-      warningMessage += '산성도가 평균보다 높습니다.\n ';
+    warningMessage += "산성도가 평균보다 높습니다.\n ";
   } else if (ph <= 7.5) {
-      warningMessage += '산성도가 평균보다 낮습니다.\n ';
+    warningMessage += "산성도가 평균보다 낮습니다.\n ";
   }
   if (oxg <= 5) {
-      warningMessage += '용존 산소량이 낮습니다.\n ';
+    warningMessage += "용존 산소량이 낮습니다.\n ";
   }
   if (cod >= 10) {
-      warningMessage += '화학적 산소 요구량이 높습니다.\n ';
+    warningMessage += "화학적 산소 요구량이 높습니다.\n ";
   }
   if (spm >= 15) {
-      warningMessage += '입자 물질의 농도가 높습니다.\n ';
+    warningMessage += "입자 물질의 농도가 높습니다.\n ";
   }
 
-  var warningMessageElement = document.getElementById('warning_message');
+  var warningMessageElement = document.getElementById("warning_message");
   warningMessageElement.innerText = warningMessage;
-  
+
   // 스타일 변경
-  warningMessageElement.style.color = 'white';
+  warningMessageElement.style.color = "white";
 }
-
-
 
 function drawBarChart(temp, spm, oxg, ph) {
   // temp
@@ -310,20 +257,18 @@ function drawPieChart(data) {
       {
         data: values,
         backgroundColor: [
-          "#FFA07A", // 연한 살구색
-          "#87CEEB", // 스카이 블루
-          "#FFDAB9", // 피치 퍼프
-          "#F0E68C", // 카키색
-          "#B0E0E6", // 파우더 블루
-          "#A9A9A9", // 다크 그레이
-          "#ADD8E6", // 라이트 블루
-          "#E0FFFF", // 라이트 시안
-          "#90EE90", // 라이트 그린
+          "#d4eaf7", // 연한 살구색
+          "#b6ccd8", // 스카이 블루
+          "#3b3c3d", // 피치 퍼프
           "#D3D3D3", // 라이트 그레이
-          "#FFC0CB", // 핑크
-          "#BDB76B", // 다크 카키색
-          "#7FFFD4", // 아쿠아마린
-          "#FFE4C4", // 비스크
+          "#71c4ef", // 카키색
+          "#00668c", // 파우더 블루
+          
+          "#1d1c1c", // 라이트 블루
+          "#313d44", // 라이트 시안
+          "#90EE90", // 라이트 그린
+          
+          
         ],
       },
     ],
@@ -341,47 +286,6 @@ function drawPieChart(data) {
   });
 }
 
-
-
-function drawGaugeChart(value) {
-  var chart = echarts.init(document.getElementById("gaugeChart")); // 변경된 부분
-  var option = {
-    series: [
-      {
-        type: "gauge",
-        min: 0,
-        max: 6,
-        splitNumber: 6, // 축을 분할할 선의 수
-        axisLabel: {
-          formatter: function (value) {
-            return value === 0 || value === 6 ? "" : value; // 0과 6은 표시하지 않음
-          },
-        },
-        axisLine: {
-          lineStyle: {
-            width: 10,
-            color: [
-              [0.5 / 6, "#ffffff"],
-              [1.5 / 6, "#00ffff"],
-              [2.5 / 6, "#00ff00"],
-              [3.5 / 6, "#ffff00"],
-              [4.5 / 6, "#ffcc00"],
-              [5.5 / 6, "#ff0000"],
-              [6, "#ffffff"],
-            ],
-          },
-        },
-        detail: {
-          valueAnimation: true,
-          fontSize: 20,
-          formatter: "Grade: {value}",
-        },
-        data: [{ value: value }],
-      },
-    ],
-  };
-  chart.setOption(option);
-}
 function drawHistoricalGradesChart(coordinate) {
   if (!coordinate) {
     console.error('Data is not defined');
@@ -477,7 +381,7 @@ function renderHistoricalGradesChart(historicalGrades) {
   }
 }
 
-function drawSpmTempChart(coordinate) {
+function drawSpmTurbidityChart(coordinate) {
   if (!coordinate) {
     console.error('Data is not defined');
     return;
@@ -497,29 +401,29 @@ function drawSpmTempChart(coordinate) {
       });
 
     const historicalSpm = historicalData.map(c => c.spm);
-    const historicalTemp = historicalData.map(c => c.temp);
+    const historicalTurbidity = historicalData.map(c => c.turbidity);
 
-    // 현재 SPM값과 Temp값을 포함
+    // 현재 SPM값과 Turbidity값을 포함
     historicalSpm.push(coordinate.spm);
-    historicalTemp.push(coordinate.temp);
+    historicalTurbidity.push(coordinate.turbidity);
 
-    renderSpmTempChart(historicalSpm, historicalTemp);
+    renderSpmTurbidityChart(historicalSpm, historicalTurbidity);
   });
 }
 
-function renderSpmTempChart(historicalSpm, historicalTemp) {
+function renderSpmTurbidityChart(historicalSpm, historicalTurbidity) {
   google.charts.load('current', { packages: ['corechart', 'line'] });
-  google.charts.setOnLoadCallback(drawSpmTempChart);
+  google.charts.setOnLoadCallback(drawSpmTurbidityChart);
 
-  function drawSpmTempChart() {
+  function drawSpmTurbidityChart() {
     const data = new google.visualization.DataTable();
     data.addColumn('number', 'Move');
     data.addColumn('number', 'SPM');
-    data.addColumn('number', 'Temp');
+    data.addColumn('number', 'Turbidity');
 
     let maxMove = 0;
     for (let i = 0; i < historicalSpm.length; i++) {
-      data.addRow([i + 1, historicalSpm[i], historicalTemp[i]]);
+      data.addRow([i + 1, historicalSpm[i], historicalTurbidity[i]]);
       maxMove = Math.max(maxMove, i + 1);
     }
 
@@ -539,6 +443,7 @@ function renderSpmTempChart(historicalSpm, historicalTemp) {
           fontSize: 14,
           color: '#fff',
         },
+        gridlines: { color: 'transparent' },
       },
       vAxis: {
         title: 'Value',
@@ -566,20 +471,15 @@ function renderSpmTempChart(historicalSpm, historicalTemp) {
       },
       backgroundColor: 'transparent',
       lineWidth: 3,
-      colors: ['#6EB5FF', '#FA726F'], // Color for SPM and Temp lines
+      colors: ['#6EB5FF', '#FA726F'], // Color for SPM and Turbidity lines
       pointSize: 6,
       curveType: 'function',
     };
 
-    const chart = new google.visualization.LineChart(document.getElementById('spm_temp_chart'));
+    const chart = new google.visualization.LineChart(document.getElementById('spm_turbidity_chart'));
     chart.draw(data, options);
   }
 }
-
-
-
-
-
 function getBounds(coordinate, zoomLevel) {
   const delta = 5 / Math.pow(2, zoomLevel);
   return {
@@ -596,7 +496,7 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
     center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
-    mapTypeId: "terrain", styles: [
+    mapTypeId: "terrain",styles: [
       {
         elementType: "geometry",
         stylers: [
@@ -755,7 +655,6 @@ function initMap() {
           },
         ],
       },
-      
     ],
     disableDefaultUI: true,
   });
@@ -777,15 +676,14 @@ function initMap() {
     }
   }
 
-
-  map.addListener('center_changed', function () {
+  map.addListener("center_changed", function () {
     currentCenter = map.getCenter(); // 現在の中心を取得
-});
+  });
 
-// 地図のズームが変更されたときのイベントリスナーを追加
-map.addListener('zoom_changed', function () {
+  // 地図のズームが変更されたときのイベントリスナーを追加
+  map.addListener("zoom_changed", function () {
     currentZoom = map.getZoom(); // 現在のズームレベルを取得
-});
+  });
 
   fetchAllCoordinates((coordinates) => {
     coordinates.forEach((coordinate) => {
@@ -805,16 +703,14 @@ map.addListener('zoom_changed', function () {
       rectangle.addListener("click", () => {
         fetchCoordinateDataByPosition(coordinate, (foundCoordinate) => {
           console.log("클릭한 좌표:", coordinate.lat, coordinate.lng);
-            console.log("찾은 좌표 데이터:", foundCoordinate);
+          console.log("찾은 좌표 데이터:", foundCoordinate);
           if (foundCoordinate) {
             updateDataDisplay(foundCoordinate);
             autoFocus(foundCoordinate);
           }
         });
       });
-      
     });
-    
 
     google.maps.event.addListener(map, "zoom_changed", function () {
       const zoomLevel = map.getZoom();
@@ -825,8 +721,6 @@ map.addListener('zoom_changed', function () {
     });
   });
 }
-
-
 
 function fetchCoordinateDataByPosition(coordinate, callback) {
   // 좌표 데이터에서 해당 위치에 맞는 데이터를 찾습니다.
@@ -842,11 +736,10 @@ function fetchCoordinateDataByPosition(coordinate, callback) {
   }
 }
 
-
 function updateDataDisplay(coordinateData) {
   const dataContainer = document.getElementById("data");
   dataContainer.innerHTML = ""; // 기존 내용을 초기화합니다.
-  
+
   if (!coordinateData) {
     dataContainer.style.display = "none";
     return;
@@ -860,8 +753,6 @@ function updateDataDisplay(coordinateData) {
       dataContainer.appendChild(item);
     }
   }
-
-  
 }
 // function updateClock() {
 //   const now = new Date();
@@ -874,11 +765,43 @@ function updateDataDisplay(coordinateData) {
 // }
 window.coordinatesData = null;
 
+let isInitMapCalled = false;
+
 function onAllCoordinatesDataFetched(coordinates) {
   window.coordinatesData = coordinates;
-  // updateClock();
-  autoFocus(); // Pie 차트 관련 함수 호출
-  initMap(); // 지도 관련 함수 호출
+
+  if (coordinates.length > 0) {
+    // 추가된 부분: 좌표가 하나라도 있는지 확인
+    if (isInitMapCalled==false) {
+      initMap();
+      isInitMapCalled = true;
+    }
+    autoFocus(coordinates[0]); // 추가된 부분: 첫 번째 좌표로 autoFocus 함수 호출
+    drawBulletChart(coordinates[0]["value"], "#bullet-chart"); // 추가된 부분: 첫 번째 좌표로 drawBulletChart 함수 호출
+    checkTemperature(
+      coordinates[0]["temp"],
+      coordinates[0]["sal"],
+      coordinates[0]["ph"],
+      coordinates[1][oxg],
+      coordiantes["cod"],
+      coordiantes["spm"]
+    ); //추가됐음 : 온도체크함수호출
+
+    drawBarChart(
+      coordinate["temp"],
+      coordinate["spm"],
+      coordinate["oxg"],
+      cooridnate["ph"]
+    ); ///추가됐음 : 바차트그리기함수호출
+
+    drawPieChart(coordinate);
+
+    renderHistoricalGradeschart(historicalGrades);
+
+    renderSpmTempchart(historicalSpm, historicalTemp);
+
+   
+  }
 }
 
 // 데이터를 불러온 다음 onCoordinatesDataFetched 함수를 호출합니다.
