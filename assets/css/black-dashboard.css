@@ -20304,8 +20304,10 @@ Copyright (c) 2015 Daniel Eden
   height: 100%;
 }
 
-#warning_message {
-  font-family: 'Noto Sans KR', sans-serif; /* 원하는 폰트로 변경하세요 */
+.warning_message1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  font-size: 17px;
 }
 
 .card-chart .chart-area {
