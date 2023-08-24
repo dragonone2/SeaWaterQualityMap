@@ -20296,6 +20296,17 @@ Copyright (c) 2015 Daniel Eden
   margin-top: 30px;
   padding: 0 10px;
 }
+.chart-area-warning {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+#warning_message {
+  font-family: 'Noto Sans KR', sans-serif; /* 원하는 폰트로 변경하세요 */
+}
 
 .card-chart .chart-area {
   height: 350px;

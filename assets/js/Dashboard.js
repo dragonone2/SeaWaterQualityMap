@@ -99,7 +99,6 @@ function fetchAllCoordinates(callback) {
   }
 }
 
-
 function checkTemperature(temp, sal, ph, oxg, cod, spm) {
   var warningMessage = "";
   if (temp >= 25) {
@@ -141,10 +140,16 @@ function drawBarChart(temp, spm, oxg, ph) {
     yAxis: {
       type: "category",
       data: ["수온"],
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     xAxis: {
       type: "value",
       max: 35,
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     series: [
       {
@@ -152,6 +157,7 @@ function drawBarChart(temp, spm, oxg, ph) {
         type: "bar",
       },
     ],
+    
   };
   tempChart.setOption(tempOption);
 
@@ -161,10 +167,16 @@ function drawBarChart(temp, spm, oxg, ph) {
     yAxis: {
       type: "category",
       data: ["spm"],
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     xAxis: {
       type: "value",
       max: 35,
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     series: [
       {
@@ -181,10 +193,16 @@ function drawBarChart(temp, spm, oxg, ph) {
     yAxis: {
       type: "category",
       data: ["oxg"],
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     xAxis: {
       type: "value",
       max: 35,
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     series: [
       {
@@ -201,10 +219,16 @@ function drawBarChart(temp, spm, oxg, ph) {
     yAxis: {
       type: "category",
       data: ["ph"],
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     xAxis: {
       type: "value",
       max: 35,
+      axisLabel: {
+        color: "#FFFFFF", // White text color
+      },
     },
     series: [
       {
@@ -263,12 +287,10 @@ function drawPieChart(data) {
           "#D3D3D3", // 라이트 그레이
           "#71c4ef", // 카키색
           "#00668c", // 파우더 블루
-          
+
           "#1d1c1c", // 라이트 블루
           "#313d44", // 라이트 시안
           "#90EE90", // 라이트 그린
-          
-          
         ],
       },
     ],
@@ -288,23 +310,25 @@ function drawPieChart(data) {
 
 function drawHistoricalGradesChart(coordinate) {
   if (!coordinate) {
-    console.error('Data is not defined');
+    console.error("Data is not defined");
     return;
   }
 
   const currentTableId = coordinate.tableId;
   const currentMoveKey = coordinate.moveKey;
-  const currentMoveIndex = parseInt(currentMoveKey.replace('move', ''), 10);
+  const currentMoveIndex = parseInt(currentMoveKey.replace("move", ""), 10);
 
   // 현재 테이블 ID와 일치하는 데이터를 찾아 그립니다.
   fetchAllCoordinates((allCoordinates) => {
-    const relatedCoordinates = allCoordinates.filter(c => c.tableId === currentTableId); // currentTableId와 일치하는 데이터 필터링
+    const relatedCoordinates = allCoordinates.filter(
+      (c) => c.tableId === currentTableId
+    ); // currentTableId와 일치하는 데이터 필터링
     const historicalGrades = relatedCoordinates
       .filter((c) => {
-        const moveIndex = parseInt(c.moveKey.replace('move', ''), 10);
+        const moveIndex = parseInt(c.moveKey.replace("move", ""), 10);
         return moveIndex < currentMoveIndex; // currentMoveKey보다 작은 MoveKey를 가진 데이터만 필터링
       })
-      .map(c => c.value);
+      .map((c) => c.value);
 
     // 현재 Grade값을 포함
     historicalGrades.push(coordinate.value);
@@ -314,94 +338,100 @@ function drawHistoricalGradesChart(coordinate) {
 }
 
 function renderHistoricalGradesChart(historicalGrades) {
-  google.charts.load('current', { packages: ['corechart', 'line'] });
+  google.charts.load("current", { packages: ["corechart", "line"] });
   google.charts.setOnLoadCallback(drawGradesChart);
 
   function drawGradesChart() {
     const data = new google.visualization.DataTable();
-    data.addColumn('number', 'Move');
-    data.addColumn('number', 'Grade');
+    data.addColumn("number", "Move");
+    data.addColumn("number", "Grade");
 
     let maxMove = 0;
     for (let i = 0; i < historicalGrades.length; i++) {
       data.addRow([i + 1, historicalGrades[i]]);
       maxMove = Math.max(maxMove, i + 1);
     }
-    
+
     const options = {
       hAxis: {
-        title: 'Move',
+        title: "Move",
         minValue: 1,
         maxValue: maxMove,
         textStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           fontSize: 12,
-          color: '#fff',
+          color: "#fff",
         },
         titleTextStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           bold: true,
           fontSize: 14,
-          color: '#fff',
+          color: "#fff",
+        },
+        gridlines: {
+          count: 0,
         },
       },
       vAxis: {
-        title: 'Grade',
+        title: "Grade",
         minValue: 1,
         maxValue: 5,
         textStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           fontSize: 12,
-          color: '#fff',
+          color: "#fff",
         },
         titleTextStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           bold: true,
           fontSize: 14,
-          color: '#fff',
+          color: "#fff",
         },
       },
-      legend: 'none',
+      legend: "none",
       chartArea: {
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
         left: 50,
         top: 30,
         right: 30,
         bottom: 30,
       },
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       lineWidth: 3,
-      colors: ['#6EB5FF'],
+      colors: ["#6EB5FF"],
       pointSize: 6,
-      curveType: 'function',
+      curveType: "function",
     };
 
-    const chart = new google.visualization.LineChart(document.getElementById('historical_grades_chart'));
+    const chart = new google.visualization.LineChart(
+      document.getElementById("historical_grades_chart")
+    );
     chart.draw(data, options);
   }
 }
 
 function drawSpmTurbidityChart(coordinate) {
   if (!coordinate) {
-    console.error('Data is not defined');
+    console.error("Data is not defined");
     return;
   }
 
   const currentTableId = coordinate.tableId;
   const currentMoveKey = coordinate.moveKey;
-  const currentMoveIndex = parseInt(currentMoveKey.replace('move', ''), 10);
+  const currentMoveIndex = parseInt(currentMoveKey.replace("move", ""), 10);
 
   // 현재 테이블 ID와 일치하는 데이터를 찾아 그립니다.
   fetchAllCoordinates((allCoordinates) => {
-    const relatedCoordinates = allCoordinates.filter(c => c.tableId === currentTableId); // currentTableId와 일치하는 데이터 필터링
-    const historicalData = relatedCoordinates
-      .filter((c) => {
-        const moveIndex = parseInt(c.moveKey.replace('move', ''), 10);
-        return moveIndex < currentMoveIndex; // currentMoveKey보다 작은 MoveKey를 가진 데이터만 필터링
-      });
+    const relatedCoordinates = allCoordinates.filter(
+      (c) => c.tableId === currentTableId
+    ); // currentTableId와 일치하는 데이터 필터링
+    const historicalData = relatedCoordinates.filter((c) => {
+      const moveIndex = parseInt(c.moveKey.replace("move", ""), 10);
+      return moveIndex < currentMoveIndex; // currentMoveKey보다 작은 MoveKey를 가진 데이터만 필터링
+    });
 
-    const historicalSpm = historicalData.map(c => c.spm);
-    const historicalTurbidity = historicalData.map(c => c.turbidity);
+    const historicalSpm = historicalData.map((c) => c.spm);
+    const historicalTurbidity = historicalData.map((c) => c.turbidity);
 
     // 현재 SPM값과 Turbidity값을 포함
     historicalSpm.push(coordinate.spm);
@@ -412,14 +442,14 @@ function drawSpmTurbidityChart(coordinate) {
 }
 
 function renderSpmTurbidityChart(historicalSpm, historicalTurbidity) {
-  google.charts.load('current', { packages: ['corechart', 'line'] });
+  google.charts.load("current", { packages: ["corechart", "line"] });
   google.charts.setOnLoadCallback(drawSpmTurbidityChart);
 
   function drawSpmTurbidityChart() {
     const data = new google.visualization.DataTable();
-    data.addColumn('number', 'Move');
-    data.addColumn('number', 'SPM');
-    data.addColumn('number', 'Turbidity');
+    data.addColumn("number", "Move");
+    data.addColumn("number", "SPM");
+    data.addColumn("number", "Turbidity");
 
     let maxMove = 0;
     for (let i = 0; i < historicalSpm.length; i++) {
@@ -429,54 +459,55 @@ function renderSpmTurbidityChart(historicalSpm, historicalTurbidity) {
 
     const options = {
       hAxis: {
-        title: 'Move',
+        title: "Move",
         minValue: 1,
         maxValue: maxMove,
         textStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           fontSize: 12,
-          color: '#fff',
+          color: "#fff",
         },
         titleTextStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           bold: true,
           fontSize: 14,
-          color: '#fff',
+          color: "#fff",
         },
-        gridlines: { color: 'transparent' },
+        gridlines: { color: "transparent" },
       },
       vAxis: {
-        title: 'Value',
+        title: "Value",
         minValue: 0, // You can adjust this based on your data
         textStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           fontSize: 12,
-          color: '#fff',
+          color: "#fff",
         },
         titleTextStyle: {
-          fontName: 'Roboto',
+          fontName: "Roboto",
           bold: true,
           fontSize: 14,
-          color: '#fff',
+          color: "#fff",
         },
-        
       },
-      legend: { position: 'bottom' }, // Legend position at the bottom
+      legend: { position: "bottom" }, // Legend position at the bottom
       chartArea: {
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
         left: 50,
         top: 30,
         right: 30,
         bottom: 50, // Increased to accommodate the legend
       },
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       lineWidth: 3,
-      colors: ['#6EB5FF', '#FA726F'], // Color for SPM and Turbidity lines
+      colors: ["#6EB5FF", "#FA726F"], // Color for SPM and Turbidity lines
       pointSize: 6,
-      curveType: 'function',
+      curveType: "function",
     };
 
-    const chart = new google.visualization.LineChart(document.getElementById('spm_turbidity_chart'));
+    const chart = new google.visualization.LineChart(
+      document.getElementById("spm_turbidity_chart")
+    );
     chart.draw(data, options);
   }
 }
@@ -496,7 +527,8 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 7,
     center: { lat: 35.9078, lng: 127.7669 }, // Centered on South Korea
-    mapTypeId: "terrain",styles: [
+    mapTypeId: "terrain",
+    styles: [
       {
         elementType: "geometry",
         stylers: [
@@ -754,15 +786,15 @@ function updateDataDisplay(coordinateData) {
     }
   }
 }
-// function updateClock() {
-//   const now = new Date();
-//   const hours = String(now.getHours()).padStart(2, "0");
-//   const minutes = String(now.getMinutes()).padStart(2, "0");
-//   const seconds = String(now.getSeconds()).padStart(2, "0");
-//   const timeString = `${hours}:${minutes}:${seconds}`;
-//   document.getElementById("clock").textContent = timeString;
-//   setTimeout(updateClock, 1000);
-// }
+function updateClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const timeString = `${hours}:${minutes}:${seconds}`;
+  document.getElementById("clock").textContent = timeString;
+  setTimeout(updateClock, 1000);
+}
 window.coordinatesData = null;
 
 let isInitMapCalled = false;
@@ -772,8 +804,9 @@ function onAllCoordinatesDataFetched(coordinates) {
 
   if (coordinates.length > 0) {
     // 추가된 부분: 좌표가 하나라도 있는지 확인
-    if (isInitMapCalled==false) {
+    if (isInitMapCalled == false) {
       initMap();
+      updateClock();
       isInitMapCalled = true;
     }
     autoFocus(coordinates[0]); // 추가된 부분: 첫 번째 좌표로 autoFocus 함수 호출
@@ -799,8 +832,6 @@ function onAllCoordinatesDataFetched(coordinates) {
     renderHistoricalGradeschart(historicalGrades);
 
     renderSpmTempchart(historicalSpm, historicalTemp);
-
-   
   }
 }
 
