@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- 文書の文字エンコーディングとブラウザの互換性設定 -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <!-- 文書のタイトル -->
+  <title>The Blue Ocean</title>
+  <!-- ビューポート設定 -->
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+    name="viewport" />
+  <!-- 地図スタイルシートのリンク -->
+  <link rel="stylesheet" href="../assets/css/map.css">
+  <!-- Firebaseライブラリのスクリプトのリンク -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.0/firebase-database.js"></script>
+  <!-- deck.glのスクリプト -->
+  <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+
+</head>
+
+<body class="sidebar-bg">
+  <!-- 本文の内容を格納するdiv要素 -->
+  <div id="content">
+    <!-- ボタンコンテナ -->
+    <div class="button-container">
+      <!-- ここにボタンや関連する内容が配置されることがあります -->
+    </div>
+    <!-- 地図を表示するdiv要素 -->
+    <div id="map"></div>
+    <!-- 検索入力とボタンを含む検索コンテナ -->
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="ex.황해,동해,남해">
+      <button id="search-button">검색</button>
+      <div id="message" style="display: none;" ></div>
+    </div>
+  </div>
+  </div>
+</body>
+<!-- カスタムマップのスクリプトのリンク -->
+<script src="../assets/js/home.js">document.getElementById("toggleLayer").addEventListener("click", toggleGeoJsonLayer);
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAMkNqy8UIL4xN40FbTVE5zYC0ucq8Mtw&callback=initMap" async
+  defer></script>
+
+</html>

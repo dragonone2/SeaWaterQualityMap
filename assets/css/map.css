@@ -1,0 +1,104 @@
+/* 버튼 컨테이너 스타일 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 버튼을 컨테이너 상단에 맞춤 */
+  padding-top: none; /* 상단 여백 설정 */
+}
+
+/* 가운데 정렬된 버튼 스타일 */
+.center-button {
+  margin: 0 10px; /* 버튼 사이의 간격 조절 */
+  padding: 10px 20px;
+  background-color: transparent; /* 배경색 제거 */
+  color: #007bff; /* 텍스트 색상 설정 */
+  border: none;
+  cursor: pointer;
+}
+
+/* 메뉴 아이콘 컨테이너 호버 스타일 */
+.menu-icon-container:hover {
+  color: #0b3d91;
+}
+
+#search-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1; /* 검색창을 지도 위로 올리기 */
+}
+
+/* 검색 입력 필드 스타일 */
+#search-input {
+  width: 200px;
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+/* 검색 버튼 스타일 */
+#search-button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* メッセージ表示エリアのスタイル */
+#message {
+  position: absolute;
+  top: 80px; /* 例: 検索ボックスの下に配置する場合 */
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  color: #333;
+  z-index: 1;
+}
+#toggle-layer {
+  position: absolute; /* 絶対位置を設定 */
+  top: 60px; /* search-containerの下の位置を指定 */
+  left: 20px; /* search-containerと同じ左位置 */
+  background-color: #4CAF50; /* グリーン */
+  border: none;
+  color: white; /* テキストの色 */
+  padding: 10px 20px; /* 上下・左右のパディング */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px; /* 上下・左右のマージン */
+  cursor: pointer; /* カーソルがポインターになるように設定 */
+  transition-duration: 0.4s; /* ホバー効果の遷移時間 */
+  border-radius: 4px; /* 角を少し丸くする */
+}
+
+#toggle-layer:hover {
+  background-color: #45a049; /* ホバー時の背景色 */
+  color: white; /* ホバー時のテキスト色（変更なし） */
+}
+
+/* 맵 컨테이너 스타일 */
+#map {
+  height: 100%;
+}
+
+/* 전체 페이지 높이와 기본 스타일 설정 */
+html,
+body,
+#content {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
